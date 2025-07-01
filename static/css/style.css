@@ -1,77 +1,217 @@
-/* Global Styling */
+:root {
+  --text-color: #2c2e3e;
+  --heading-color: #34374C;
+  --brand-color: #EE2B47;
+  --brand-color-hover: #d1203a;
+  --bg-light: #F6F6F6;
+  --border-color: #E0E0E0;
+}
+
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-    background-color: #fff5f5;
-    color: #333;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  background-color: white;
+  scroll-behavior: smooth;
+  overscroll-behavior: none;
+  overflow-x: hidden;
+  color: var(--text-color);
 }
 
-/* Navbar */
+/* Logo */
+#logo {
+  color: var(--brand-color);
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+/* Navbar Styles */
+.nav-link {
+  color: var(--text-color);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: var(--brand-color) !important;
+}
+
+#login-link {
+  color: var(--brand-color);
+}
+
+#login-link:hover {
+  color: var(--brand-color-hover) !important;
+}
+
+/* Remove default navbar toggler outline */
+.navbar-toggler {
+  border: none;
+  box-shadow: none !important;
+}
+
+/* Toggle animation: hamburger to X */
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(255,255,255,1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+.navbar-toggler[aria-expanded="true"] .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(255,255,255,1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M6 6L24 24M6 24L24 6'/%3E%3C/svg%3E");
+}
+
+/* Navbar default (transparent + white text) */
 .navbar {
-    background-color: #b30000;
+  background-color: transparent;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.navbar-brand,
-.navbar-nav .nav-link {
-    color: #fff !important;
-    font-weight: 500;
+.navbar .nav-link,
+.navbar #login-link,
+.navbar #logo {
+  color: white;
 }
 
-.navbar-nav .nav-link:hover {
-    color: #ffcccc !important;
+/* Hover effect still applies */
+.navbar .nav-link:hover,
+.navbar #login-link:hover {
+  color: var(--brand-color) !important;
 }
 
-/* Hero Section */
-.hero {
-    background-color: #ff4d4d;
-    color: white;
-    padding: 80px 20px;
-    text-align: center;
-    border-radius: 10px;
+/* When scrolled — revert to solid background and dark links */
+.navbar.scrolled {
+  background-color: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navbar.scrolled .nav-link,
+.navbar.scrolled #login-link {
+  color: var(--text-color);
+}
+
+.navbar.scrolled #logo {
+  color: var(--brand-color);
+}
+
+.navbar.scrolled .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(44, 46, 62,1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+.navbar.scrolled .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(44, 46, 62,1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M6 6L24 24M6 24L24 6'/%3E%3C/svg%3E");
 }
 
 /* Buttons */
-.btn-primary {
-    background-color: #cc0000;
-    border-color: #cc0000;
+.btn {
+  font-weight: 600;
+  padding: 0.5rem 1.5rem;
+  border-radius: 50px;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.btn-primary:hover {
-    background-color: #a30000;
-    border-color: #a30000;
+.btn-danger {
+  background-color: var(--brand-color);
+  border: none;
 }
 
-/* Links */
-a {
-    color: #cc0000;
-    text-decoration: none;
+.btn-danger:hover {
+  background-color: var(--brand-color-hover);
 }
 
-a:hover {
-    color: #800000;
-    text-decoration: underline;
+/* Hero Section */
+.hero-section {
+  min-height: 90vh;
+  background: url('/static/images/hero-4.jpg') center/cover no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding-top: 5rem;
+  background-color: rgba(0, 0, 0, 0.5); /* fallback */
+  position: relative;
+}
+
+.hero-section::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0,0,0,0.4);
+  z-index: 1;
+}
+
+.hero-section > .container {
+  position: relative;
+  z-index: 2;
+}
+
+/* Hero text adjustments */
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Search Bar Wrapper */
+.search-wrapper {
+  background: white;
+  border-radius: 3rem;
+  padding: 0.5rem 0.5rem 0.5rem 0.75rem;
+  max-width: 800px;
+  width: 100%;
+}
+
+/* Icon */
+.search-icon {
+  font-size: 1.5rem;
+  color: var(--heading-color);
+}
+
+/* Input */
+.search-wrapper input.form-control {
+  flex: 1;
+  font-size: 1.1rem;
+  border-radius: 0;
+  margin-left: 0.75rem;
+}
+
+/* Button inside search */
+.search-btn {
+  background-color: var(--brand-color);
+  color: white;
+  font-weight: 600;
+  border: 2px solid transparent;
+  border-radius: 3rem;
+  padding: 0.5rem 1.5rem;
+  margin-left: 0.5rem;
+  transition: background-color 0.3s ease;
+}
+
+.search-btn:hover {
+  background-color: var(--brand-color-hover);
 }
 
 /* Footer */
 footer {
-    background-color: #b30000;
-    color: white;
-    padding: 20px 0;
-    text-align: center;
-    margin-top: auto;
+  color: var(--text-color);
+  text-align: center;
+  padding: 1rem 0;
+  margin-top: auto;
 }
 
-/* Cards and Content Boxes */
-.card {
-    border: none;
-    box-shadow: 0 0 10px rgba(204, 0, 0, 0.1);
-}
-
-.card-title {
-    color: #b30000;
-}
-
-/* Forms */
-.form-control:focus {
-    border-color: #cc0000;
-    box-shadow: 0 0 0 0.2rem rgba(204, 0, 0, 0.25);
+/* Container Helpers */
+.container-fluid {
+  padding-left: 2rem;
+  padding-right: 2rem;
 }
