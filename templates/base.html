@@ -41,23 +41,20 @@
 
           <!-- Navigation Links -->
           <ul class="navbar-nav mx-auto mt-2 mb-4 mb-lg-0">
-            <li class="nav-item"><a class="nav-link mx-lg-4 fw-semibold" href="#">Explore</a></li>
-            <li class="nav-item"><a class="nav-link mx-lg-4 fw-semibold" href="#">Hidden Gems</a></li>
-            {% if user.is_authenticated %}
-              <li class="nav-item"><a href="#" class="nav-link fw-semibold">My Visits</a></li>
-            {% endif %}
-            <li class="nav-item"><a href="#" class="nav-link fw-semibold">About</a></li>
+            <li class="nav-item"><a class="nav-link mx-lg-4 fw-semibold {% if request.path == '/explore/' %}active{% endif %}" href="{% url 'explore' %}">Explore</a></li>
+            <li class="nav-item"><a class="nav-link mx-lg-4 fw-semibold {% if request.path == '/hidden-gems/' %}active{% endif %}" href="#">Hidden Gems</a></li>
+            <li class="nav-item"><a href="#" class="nav-link mx-lg-4 fw-semibold {% if request.path == '/about/' %}active{% endif %}">About</a></li>
           </ul>
 
           <!-- Auth Controls -->
           {% if user.is_authenticated %}
             <div class="d-flex align-items-center gap-2">
-              <a href="{% url 'account_logout' %}" id="login-link" class="nav-link fw-semibold">Logout</a>
+              <a href="{% url 'account_logout' %}" id="login-link" class="nav-link fw-semibold {% if request.path == '/accounts/logout/' %}active{% endif %}">Logout</a>
             </div>
           {% else %}
             <div class="d-flex align-items-center gap-2">
-              <a href="{% url 'account_login' %}" id="login-link" class="nav-link fw-semibold">Login</a>
-              <a href="{% url 'account_signup' %}" class="btn btn-danger px-4 rounded-pill btn-md">Register</a>
+              <a href="{% url 'account_login' %}" id="login-link" class="nav-link fw-semibold {% if request.path == '/accounts/login/' %}active{% endif %}">Login</a>
+              <a href="{% url 'account_signup' %}" class="btn btn-danger px-4 rounded-pill btn-md {% if request.path == '/accounts/signup/' %}active{% endif %}">Register</a>
             </div>
           {% endif %}
 
@@ -68,7 +65,7 @@
   </header>
 
   <!-- Main Content -->
-  <main class="flex-grow-1">
+  <main class="flex-grow-1 py-5">
     {% block content %}{% endblock %}
   </main>
 

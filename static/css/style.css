@@ -44,6 +44,10 @@ body {
   color: var(--brand-color) !important;
 }
 
+.nav-link.active {
+  color: var(--brand-color) !important;
+}
+
 #login-link {
   color: var(--brand-color);
 }
@@ -200,6 +204,17 @@ body {
 
 .search-btn:hover {
   background-color: var(--brand-color-hover);
+}
+
+/* Discoveries Section */
+.btn-light.rounded-circle {
+  background-color: white;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Footer */

@@ -9,7 +9,7 @@ class Country(models.Model):
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(unique=True)
     story = models.TextField()
-    cover_photo = CloudinaryField('image', default='default-country.jpg', blank=True, null=True)
+    cover_photo = CloudinaryField('image', blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -41,7 +41,7 @@ class City(models.Model):
     slug = models.SlugField(unique=True)
     story = models.TextField()
     country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="cities")
-    cover_photo = CloudinaryField('image', default='default-city.jpg', blank=True, null=True)
+    cover_photo = CloudinaryField('image', blank=True, null=True)
 
     def __str__(self):
         return f"{self.name}, {self.country.name}"
@@ -115,3 +115,16 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.user} on {self.content_object}"
+    
+class Wishlist(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='wishlist_items')
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'content_type', 'object_id')
+
+    def __str__(self):
+        return f"{self.user} wishes {self.content_object}"

@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %} Explore {% endblock %}
+
+{% block content %}
+
+<div class="container my-5">
+  <h2 class="text-center mb-4">Explore Countries</h2>
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for country in countries %}
+    <div class="col">
+      <a href="{% url 'country_detail' country.slug %}" class="text-decoration-none text-dark">
+        <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden position-relative">
+          
+          <!-- Image -->
+          <div class="position-relative">
+            <img src="{{ country.cover_photo.url }}" class="card-img-top" alt="{{ country.name }}">
+            
+            <!-- Wishlist button -->
+            <div class="position-absolute top-0 end-0 m-3">
+              <button type="button" class="btn btn-light rounded-circle shadow-sm p-2">
+                <i class="bi bi-heart fs-5 text-dark"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card Body -->
+          <div class="card-body">
+            <h5 class="card-title fw-bold">{{ country.name }}</h5>
+            <p class="card-text small text-muted">{{ country.story|truncatewords:20 }}</p>
+
+            <!-- Star Rating -->
+            <div class="text-warning small">
+              {% with country.average_rating as rating %}
+                {% for i in "12345" %}
+                  {% if rating >= forloop.counter %}
+                    <i class="bi bi-star-fill"></i>
+                  {% elif rating >= forloop.counter0|add:"0.5" %}
+                    <i class="bi bi-star-half"></i>
+                  {% else %}
+                    <i class="bi bi-star"></i>
+                  {% endif %}
+                {% endfor %}
+                <span class="text-muted ms-1">{{ rating }}</span>
+              {% endwith %}
+            </div>
+          </div>
+
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
