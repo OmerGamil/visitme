@@ -5,21 +5,37 @@
 {% block content %}
 
 <div class="container my-5">
-  <h2 class="text-center mb-4">Explore Countries</h2>
+  <h2 class="text-center mb-2">Explore Countries</h2>
+  <p class="text-center text-muted mb-4">Discover the world's most beautiful countries and their hidden gems.</p>
+  <form method="GET" class="d-flex justify-content-center mb-4">
+    <div class="search-wrapper d-flex align-items-center shadow-sm">
+      <span class="search-icon ms-3"><i class="bi bi-search"></i></span>
+      <input 
+        type="text" 
+        name="q" 
+        class="form-control border-0 shadow-none" 
+        placeholder="Search countries..." 
+        value="{{ request.GET.q }}">
+      <button type="submit" class="btn search-btn">Search</button>
+    </div>
+  </form>
   <div class="row row-cols-1 row-cols-md-3 g-4">
     {% for country in countries %}
     <div class="col">
-      <a href="{% url 'country_detail' country.slug %}" class="text-decoration-none text-dark">
+      <a href="{% url 'country_detail' slug=country.slug %}" class="text-decoration-none text-dark">
         <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden position-relative">
           
           <!-- Image -->
           <div class="position-relative">
             <img src="{{ country.cover_photo.url }}" class="card-img-top" alt="{{ country.name }}">
             
-            <!-- Wishlist button -->
+            <!-- Heart Wishlist Button -->
             <div class="position-absolute top-0 end-0 m-3">
-              <button type="button" class="btn btn-light rounded-circle shadow-sm p-2">
-                <i class="bi bi-heart fs-5 text-dark"></i>
+              <button class="wishlist-btn btn btn-light rounded-circle shadow-sm p-2"
+                      data-content-type="{{ country.get_content_type.id }}"
+                      data-object-id="{{ country.id }}"
+                      aria-label="Wishlist">
+                <i class="bi {% if country in user.wishlist_items.all %}bi-heart-fill text-danger{% else %}bi-heart{% endif %} fs-5"></i>
               </button>
             </div>
           </div>

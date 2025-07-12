@@ -13,6 +13,9 @@ class Country(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def get_content_type(self):
+        return ContentType.objects.get_for_model(self)
 
     def get_cover_photo(self):
         content_type = ContentType.objects.get_for_model(Landmark)
@@ -45,6 +48,9 @@ class City(models.Model):
 
     def __str__(self):
         return f"{self.name}, {self.country.name}"
+    
+    def get_content_type(self):
+        return ContentType.objects.get_for_model(self)
 
     def get_cover_photo(self):
         content_type = ContentType.objects.get_for_model(Landmark)
@@ -77,6 +83,9 @@ class Landmark(models.Model):
 
     def __str__(self):
         return f"{self.name} in {self.city.name}"
+    
+    def get_content_type(self):
+        return ContentType.objects.get_for_model(self)
 
     def average_rating(self):
         content_type = ContentType.objects.get_for_model(self)
@@ -103,6 +112,9 @@ class Rating(models.Model):
 
     def __str__(self):
         return f"{self.stars / 2} stars by {self.user}"
+    
+    def get_content_type(self):
+        return ContentType.objects.get_for_model(self)
 
 
 class Comment(models.Model):
@@ -115,6 +127,9 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.user} on {self.content_object}"
+    
+    def get_content_type(self):
+        return ContentType.objects.get_for_model(self)
     
 class Wishlist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='wishlist_items')

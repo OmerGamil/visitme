@@ -207,6 +207,12 @@ body {
 }
 
 /* Discoveries Section */
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
 .btn-light.rounded-circle {
   background-color: white;
   width: 40px;
@@ -216,6 +222,20 @@ body {
   align-items: center;
   justify-content: center;
 }
+
+.card-img-top {
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+
+.wishlist-btn i {
+  transition: color 0.3s ease;
+}
+
+.wishlist-btn:hover i {
+  color: var(--brand-color);
+}
+
 
 /* Footer */
 footer {

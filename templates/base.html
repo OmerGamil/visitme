@@ -18,9 +18,11 @@
   
   <!-- Custom CSS -->
   <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+
+  <script src="{% static 'js/wishlist.js' %}"></script>
 </head>
 <body class="d-flex flex-column min-vh-100">
-
+{% csrf_token %}
   <!-- Header -->
   <header class="bg-white border-bottom">
     <nav class="navbar navbar-expand-lg fixed-top w-100">
