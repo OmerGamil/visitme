@@ -1,0 +1,81 @@
+{% load custom_filters %}
+
+{% if user.is_authenticated %}
+  <div class="card shadow-sm border-0 rounded-4 p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <strong class="text-danger">{{ user.username }} (You)</strong>
+      {% if user_comment %}
+        <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" id="edit-comment-btn">Edit</button>
+      {% endif %}
+    </div>
+    <div id="comment-display" {% if not user_comment %}style="display:none;"{% endif %}>
+      {% if user_rating %}
+        <div class="text-warning mb-2">
+          {% for i in "12345" %}
+            {% if user_rating >= forloop.counter %}
+              <i class="bi bi-star-fill"></i>
+            {% elif user_rating >= forloop.counter0|add:"0.5" %}
+              <i class="bi bi-star-half"></i>
+            {% else %}
+              <i class="bi bi-star"></i>
+            {% endif %}
+          {% endfor %}
+          <span class="text-muted ms-2">{{ user_rating }}</span>
+        </div>
+      {% endif %}
+      <p id="user-comment-text" class="mb-0">{{ user_comment.text }}</p>
+      <div id="user-comment-time" class="text-muted small mt-1">{{ user_comment.created_at }}</div>
+    </div>
+
+    <form id="user-comment-form" {% if user_comment %}style="display:none;"{% endif %} action="{% url 'submit_comment' %}" method="post">
+      {% csrf_token %}
+      <input type="hidden" name="object_id" value="{{ object.id }}">
+      <input type="hidden" name="content_type_id" value="{{ object.get_content_type.id }}">
+
+      <div class="d-flex align-items-center gap-1 rating-stars mb-3" id="form-star-rating">
+        {% for i in "12345" %}
+          <i class="bi bi-star fs-5 text-warning star" data-value="{{ forloop.counter }}" role="button"></i>
+        {% endfor %}
+        <input type="hidden" name="stars" id="review-stars" value="{{ user_rating|default:"0" }}">
+      </div>
+
+      <textarea name="text" class="form-control mb-3" rows="3" placeholder="Write your review...">{{ user_comment.text|default:"" }}</textarea>
+
+      <div class="d-flex justify-content-end gap-2">
+        {% if user_comment %}
+          <button type="button" class="btn btn-secondary btn-sm" id="cancel-edit">Cancel</button>
+        {% endif %}
+        <button type="submit" class="btn btn-danger btn-sm">{{ user_comment|yesno:"Update Review,Leave Review" }}</button>
+      </div>
+    </form>
+  </div>
+{% endif %}
+
+<!-- Other User Reviews -->
+{% for comment in reviews %}
+  <div class="card shadow-sm border-0 rounded-4 p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <strong>{{ comment.user.username }}</strong>
+      <small class="text-muted">{{ comment.created_at|date:"M d, Y H:i" }}</small>
+    </div>
+    {% with ratings_by_user|get_item:comment.user.id as rating %}
+      {% if rating %}
+        <div class="text-warning mb-2">
+          {% for i in "12345" %}
+            {% if rating >= forloop.counter %}
+              <i class="bi bi-star-fill"></i>
+            {% elif rating >= forloop.counter0|add:"0.5" %}
+              <i class="bi bi-star-half"></i>
+            {% else %}
+              <i class="bi bi-star"></i>
+            {% endif %}
+          {% endfor %}
+          <span class="text-muted ms-2">{{ rating }}</span>
+        </div>
+      {% endif %}
+    {% endwith %}
+    <p class="mb-0">{{ comment.text }}</p>
+  </div>
+{% empty %}
+  <p class="text-muted">No reviews yet. Be the first to share your thoughts!</p>
+{% endfor %}

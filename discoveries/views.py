@@ -1,12 +1,95 @@
 from django.views.generic import ListView, DetailView
 from django.http import JsonResponse
 from django.contrib.contenttypes.models import ContentType
-from .models import Country, City, Wishlist, Rating, Comment
 from django.db.models import Q
-
-from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404
+from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
+
+from .models import Country, City, Landmark, Wishlist, Rating, Comment
+
+# ---------- DRY Mixin ----------
+
+class DetailContextMixin:
+    model = None
+    object_type = None
+    related_model = None  # e.g. City for Country → Cities
+
+    def get_related_queryset(self, obj):
+        """Return middle list items (e.g. cities or landmarks)"""
+        if self.related_model is None:
+            return None
+        if self.object_type == "country":
+            return self.related_model.objects.filter(country=obj)
+        if self.object_type == "city":
+            return self.related_model.objects.filter(city=obj)
+        return None
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = self.object
+        content_type = ContentType.objects.get_for_model(obj)
+
+        # Required for base_detail.html
+        context["object"] = obj
+        context["object_type"] = self.object_type
+
+        # Search query for middle list
+        query = self.request.GET.get("q")
+        related_qs = self.get_related_queryset(obj)
+        if related_qs is not None:
+            if query:
+                related_qs = related_qs.filter(Q(name__icontains=query))
+            context["middle_list"] = related_qs
+
+        # Wishlist
+        if self.request.user.is_authenticated:
+            wishlist_ids = Wishlist.objects.filter(
+                user=self.request.user
+            ).values_list("object_id", flat=True)
+            context["wishlist_ids"] = list(wishlist_ids)
+
+            # Rating
+            user_rating = Rating.objects.filter(
+                user=self.request.user,
+                content_type=content_type,
+                object_id=obj.id
+            ).first()
+            context["user_rating"] = user_rating.stars / 2 if user_rating else 0
+
+            # Comment
+            user_comment = Comment.objects.filter(
+                user=self.request.user,
+                content_type=content_type,
+                object_id=obj.id
+            ).first()
+            context["user_comment"] = user_comment
+
+            # Other reviews
+            context["reviews"] = Comment.objects.filter(
+                content_type=content_type,
+                object_id=obj.id
+            ).exclude(user=self.request.user).select_related("user").order_by("-created_at")
+        else:
+            context["wishlist_ids"] = []
+            context["user_rating"] = 0
+            context["user_comment"] = None
+            context["reviews"] = Comment.objects.filter(
+                content_type=content_type,
+                object_id=obj.id
+            ).select_related("user").order_by("-created_at")
+
+        # Ratings for all users
+        ratings = Rating.objects.filter(
+            content_type=content_type,
+            object_id=obj.id
+        )
+        context["ratings_by_user"] = {r.user_id: r.stars / 2 for r in ratings}
+
+        return context
+
+
+# ---------- VIEWS ----------
 
 class CountryListView(ListView):
     model = Country
@@ -16,9 +99,9 @@ class CountryListView(ListView):
     def get_queryset(self):
         query = self.request.GET.get("q")
         if query:
-            return Country.objects.filter(Q(name__icontains=query))
+            return Country.objects.filter(name__icontains=query)
         return Country.objects.all()
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
@@ -32,70 +115,32 @@ class CountryListView(ListView):
             context['wishlist_ids'] = []
         return context
 
-class CountryDetailView(DetailView):
+
+class CountryDetailView(DetailContextMixin, DetailView):
     model = Country
-    template_name = 'discoveries/country_detail.html'
-    context_object_name = 'country'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        country = self.object
-        content_type = ContentType.objects.get_for_model(Country)
+    template_name = "discoveries/country_detail.html"
+    context_object_name = "country"
+    object_type = "country"
+    related_model = City
 
-        # City Search
-        query = self.request.GET.get("q")
-        cities_qs = City.objects.filter(country=country)
-        if query:
-            cities_qs = cities_qs.filter(Q(name__icontains=query))
-        context['cities'] = cities_qs
 
-        if self.request.user.is_authenticated:
-            wishlist_ids = Wishlist.objects.filter(
-                user=self.request.user
-            ).values_list('object_id', flat=True)
-            context['wishlist_ids'] = list(wishlist_ids)
+class CityDetailView(DetailContextMixin, DetailView):
+    model = City
+    template_name = "discoveries/city_detail.html"
+    context_object_name = "city"
+    object_type = "city"
+    related_model = Landmark
 
-            # User rating
-            user_rating = Rating.objects.filter(
-                user=self.request.user,
-                content_type=content_type,
-                object_id=country.id
-            ).first()
-            context['user_rating'] = user_rating.stars / 2 if user_rating else 0
 
-            # User comment
-            user_comment = Comment.objects.filter(
-                user=self.request.user,
-                content_type=content_type,
-                object_id=country.id
-            ).first()
-            context['user_comment'] = user_comment
+class LandmarkDetailView(DetailContextMixin, DetailView):
+    model = Landmark
+    template_name = "discoveries/landmark_detail.html"
+    context_object_name = "landmark"
+    object_type = "landmark"
+    related_model = None
 
-            # Other reviews (not this user)
-            context['reviews'] = Comment.objects.filter(
-                content_type=content_type,
-                object_id=country.id
-            ).exclude(user=self.request.user).select_related('user').order_by('-created_at')
 
-        else:
-            context['wishlist_ids'] = []
-            context['user_rating'] = 0
-            context['user_comment'] = None
-
-            context['reviews'] = Comment.objects.filter(
-                content_type=content_type,
-                object_id=country.id
-            ).select_related('user').order_by('-created_at')
-
-        # Ratings by user ID for use in templates
-        ratings = Rating.objects.filter(
-            content_type=content_type,
-            object_id=country.id
-        )
-        context['ratings_by_user'] = {r.user_id: r.stars / 2 for r in ratings}
-
-        return context
-
+# ---------- AJAX Views ----------
 
 @require_POST
 @login_required
@@ -118,34 +163,31 @@ def toggle_wishlist(request):
 
 @require_POST
 @login_required
-def rate_country(request, country_id):
-    from django.shortcuts import get_object_or_404
-
-    stars = request.POST.get("stars")
+def rate_object(request):
     try:
-        stars = float(stars)
+        stars = float(request.POST.get("stars"))
         if stars < 1 or stars > 5:
             raise ValueError
     except (ValueError, TypeError):
         return JsonResponse({'success': False, 'error': 'Invalid rating'}, status=400)
 
-    country = get_object_or_404(Country, pk=country_id)
-    content_type = ContentType.objects.get_for_model(Country)
+    object_id = request.POST.get("object_id")
+    content_type_id = request.POST.get("content_type_id")
+    content_type = get_object_or_404(ContentType, id=content_type_id)
 
-    # Remove existing rating(s) by this user for this country
-    Rating.objects.filter(user=request.user, content_type=content_type, object_id=country.id).delete()
+    # Remove existing
+    Rating.objects.filter(user=request.user, content_type=content_type, object_id=object_id).delete()
 
-    # Save new rating (stored as 2 to 10, i.e., x2)
+    # Create new
     Rating.objects.create(
         user=request.user,
         stars=int(stars * 2),
         content_type=content_type,
-        object_id=country.id
+        object_id=object_id
     )
 
-    # Calculate average
-    all_stars = Rating.objects.filter(content_type=content_type, object_id=country.id)
-    average = sum([r.stars for r in all_stars]) / (2 * len(all_stars))
+    ratings = Rating.objects.filter(content_type=content_type, object_id=object_id)
+    average = sum(r.stars for r in ratings) / (2 * len(ratings))
 
     return JsonResponse({'success': True, 'average_rating': round(average, 1)})
 
@@ -153,7 +195,7 @@ def rate_country(request, country_id):
 @require_POST
 @login_required
 def submit_comment(request):
-    comment_text = request.POST.get("text")  # updated from 'comment'
+    comment_text = request.POST.get("text")
     object_id = request.POST.get("object_id")
     content_type_id = request.POST.get("content_type_id")
 
@@ -165,22 +207,17 @@ def submit_comment(request):
     except ContentType.DoesNotExist:
         return JsonResponse({"success": False, "error": "Invalid content type"})
 
-    # Find latest rating by this user for the object (optional link)
     latest_rating = Rating.objects.filter(
         user=request.user,
         content_type=content_type,
         object_id=object_id
     ).order_by("-created_at").first()
 
-    # Either update or create the user's comment for this object
     comment, created = Comment.objects.update_or_create(
         user=request.user,
         content_type=content_type,
         object_id=object_id,
-        defaults={
-            "text": comment_text,
-            "rating": latest_rating
-        }
+        defaults={"text": comment_text, "rating": latest_rating}
     )
 
     return JsonResponse({

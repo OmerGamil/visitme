@@ -1,0 +1,9 @@
+<form id="rating-form" data-country-id="{{ object.id }}" data-content-type-id="{{ object.get_content_type.id }}" data-user-rating="{{ user_rating }}">
+  {% csrf_token %}
+  <div class="d-flex align-items-center gap-1 rating-stars" id="hero-star-rating">
+    {% for i in "12345" %}
+      <i class="bi bi-star fs-5 text-warning star" data-value="{{ forloop.counter }}" role="button"></i>
+    {% endfor %}
+    <span class="text-white ms-2" id="rating-value">{{ object.average_rating|default:"0" }}</span>
+  </div>
+</form>

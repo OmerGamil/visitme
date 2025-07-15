@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Set initial state
+  // Initial fill
   if (heroStarContainer) fillStars(heroStarContainer, selectedRating);
   if (formStarContainer) fillStars(formStarContainer, selectedRating);
 
@@ -44,17 +44,17 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       star.addEventListener("click", () => {
-        const countryId = ratingForm.dataset.countryId;
+        const objectId = ratingForm.dataset.countryId;
         const contentTypeId = ratingForm.dataset.contentTypeId;
         selectedRating = parseInt(star.dataset.value);
 
-        fetch(`/rate/country/${countryId}/`, {
+        fetch("/rate/object/", {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
             "X-CSRFToken": csrfToken
           },
-          body: `stars=${selectedRating}`
+          body: `stars=${selectedRating}&object_id=${objectId}&content_type_id=${contentTypeId}`
         })
         .then(res => {
           if (res.redirected && res.url.includes("/accounts/login")) {
@@ -69,6 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (ratingValue) ratingValue.textContent = data.average_rating;
             fillStars(container, selectedRating);
 
+            // Inject star visuals into modal
             if (container === heroStarContainer && modalStars) {
               modalStars.innerHTML = "";
               for (let i = 1; i <= 5; i++) {
@@ -78,28 +79,15 @@ document.addEventListener("DOMContentLoaded", () => {
               }
             }
 
+            // Update fallback hidden inputs in modal
             if (commentForm) {
-              // Clean hidden inputs
-              const oldInputs = commentForm.querySelectorAll("input[type=hidden]");
-              oldInputs.forEach(input => input.remove());
+              const objectInput = document.getElementById("modal-object-id");
+              const contentTypeInput = document.getElementById("modal-content-type-id");
+              const starsInput = document.getElementById("modal-stars");
 
-              const objectInput = document.createElement("input");
-              objectInput.type = "hidden";
-              objectInput.name = "object_id";
-              objectInput.value = countryId;
-              commentForm.appendChild(objectInput);
-
-              const contentTypeInput = document.createElement("input");
-              contentTypeInput.type = "hidden";
-              contentTypeInput.name = "content_type_id";
-              contentTypeInput.value = contentTypeId;
-              commentForm.appendChild(contentTypeInput);
-
-              const starsInput = document.createElement("input");
-              starsInput.type = "hidden";
-              starsInput.name = "stars";
-              starsInput.value = selectedRating;
-              commentForm.appendChild(starsInput);
+              if (objectInput) objectInput.value = objectId;
+              if (contentTypeInput) contentTypeInput.value = contentTypeId;
+              if (starsInput) starsInput.value = selectedRating;
             }
 
             if (showModal && commentModal) {
@@ -113,11 +101,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Hook up both star areas
-  if (heroStarContainer) handleStarClick(heroStarContainer, true); // show modal
-  if (formStarContainer) handleStarClick(formStarContainer, false); // do not show modal
+  // Hook up star interactions
+  if (heroStarContainer) handleStarClick(heroStarContainer, true);  // hero -> triggers modal
+  if (formStarContainer) handleStarClick(formStarContainer, false); // form -> no modal
 
-  // Comment form submission
+  // Handle comment submission
   if (commentForm) {
     commentForm.addEventListener("submit", function (e) {
       e.preventDefault();

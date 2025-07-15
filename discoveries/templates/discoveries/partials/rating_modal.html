@@ -1,0 +1,32 @@
+<div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content custom-modal">
+      <div class="modal-header custom-modal-header">
+        <h5 class="modal-title" id="commentModalLabel">Leave a Comment</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="comment-form" method="post">
+        {% csrf_token %}
+
+        <!-- Fallback hidden fields -->
+        <input type="hidden" name="object_id" id="modal-object-id" value="{{ object.id }}">
+        <input type="hidden" name="content_type_id" id="modal-content-type-id" value="{{ object.get_content_type.id }}">
+        <input type="hidden" name="stars" id="modal-stars" value="{{ user_rating|default:"0" }}">
+
+        <div class="modal-body">
+          <div class="text-center mb-3">
+            <h6 class="fw-bold text-dark">Thanks for rating!</h6>
+            <div id="modal-star-display" class="text-warning fs-5"></div>
+          </div>
+
+          <textarea name="text" class="form-control" rows="4" placeholder="Write your comment here..."></textarea>
+        </div>
+
+        <div class="modal-footer justify-content-end custom-footer">
+          <button type="button" class="btn btn-skip" data-bs-dismiss="modal">Skip</button>
+          <button type="submit" class="btn btn-submit-comment">Submit Comment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

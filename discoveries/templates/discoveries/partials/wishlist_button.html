@@ -1,0 +1,12 @@
+<div class="position-absolute bottom-0 end-0 m-4 z-3">
+  <button type="button"
+          class="wishlist-btn btn btn-light rounded-circle shadow-sm d-flex align-items-center p-2"
+          data-content-type="{{ object.get_content_type.id }}"
+          data-object-id="{{ object.id }}">
+    {% if object.id in wishlist_ids %}
+      <i class="bi bi-heart-fill text-danger fs-5"></i>
+    {% else %}
+      <i class="bi bi-heart fs-5"></i>
+    {% endif %}
+  </button>
+</div>
