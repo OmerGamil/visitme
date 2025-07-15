@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.html import format_html
 from django.contrib.auth.models import User
 from cloudinary.models import CloudinaryField
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -18,6 +19,9 @@ class Country(models.Model):
         return ContentType.objects.get_for_model(self)
 
     def get_cover_photo(self):
+        if self.cover_photo:
+            return self.cover_photo.url
+
         content_type = ContentType.objects.get_for_model(Landmark)
         rated_places = Landmark.objects.filter(city__country=self).annotate(
             avg_rating=models.Avg(
@@ -30,8 +34,16 @@ class Country(models.Model):
             )
         ).order_by('-avg_rating')
 
-        best_place = rated_places.first()
-        return self.cover_photo.url if self.cover_photo else best_place.photos.first().image.url if best_place and best_place.photos.exists() else None
+        best_rated = rated_places.first()
+        if best_rated and best_rated.photos.exists():
+            return best_rated.photos.first().image.url
+
+        all_landmarks = Landmark.objects.filter(city__country=self)
+        for landmark in all_landmarks:
+            if landmark.photos.exists():
+                return landmark.photos.first().image.url
+
+        return None
 
     def average_rating(self):
         content_type = ContentType.objects.get_for_model(self)
@@ -53,6 +65,9 @@ class City(models.Model):
         return ContentType.objects.get_for_model(self)
 
     def get_cover_photo(self):
+        if self.cover_photo:
+            return self.cover_photo.url
+
         content_type = ContentType.objects.get_for_model(Landmark)
         rated_places = Landmark.objects.filter(city=self).annotate(
             avg_rating=models.Avg(
@@ -65,8 +80,16 @@ class City(models.Model):
             )
         ).order_by('-avg_rating')
 
-        best_place = rated_places.first()
-        return self.cover_photo.url if self.cover_photo else best_place.photos.first().image.url if best_place and best_place.photos.exists() else None
+        best_rated = rated_places.first()
+        if best_rated and best_rated.photos.exists():
+            return best_rated.photos.first().image.url
+
+        all_landmarks = Landmark.objects.filter(city=self)
+        for landmark in all_landmarks:
+            if landmark.photos.exists():
+                return landmark.photos.first().image.url
+
+        return None
 
     def average_rating(self):
         content_type = ContentType.objects.get_for_model(self)
@@ -84,6 +107,10 @@ class Landmark(models.Model):
     def __str__(self):
         return f"{self.name} in {self.city.name}"
     
+    def get_cover_photo(self):
+        first_photo = self.photos.first()
+        return first_photo.image.url if first_photo and first_photo.image else None
+    
     def get_content_type(self):
         return ContentType.objects.get_for_model(self)
 
@@ -100,6 +127,14 @@ class Photo(models.Model):
 
     def __str__(self):
         return f"Photo of {self.landmark.name}"
+    
+    def image_preview(self):
+        if self.image:
+            return format_html('<img src="{}" style="max-height: 100px;" />', self.image.url)
+        return ""
+    
+    image_preview.short_description = "Preview"
+
 
 
 class Rating(models.Model):

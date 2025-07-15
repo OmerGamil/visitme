@@ -4,7 +4,9 @@
 {% block title %}{{ object.name }} - Visit Me{% endblock %}
 
 {% block hero %}
-<section class="hero-section d-flex align-items-center text-white position-relative" style="background-image: url('{{ object.cover_photo.url }}'); min-height: 60vh;">
+{% with cover_photo=object.cover_photo.url|default:object.get_cover_photo %}
+<section class="hero-section d-flex align-items-center text-white position-relative" style="background-image: url('{{ cover_photo }}'); min-height: 60vh;">
+{% endwith %}
   <div class="container text-center">
     <h1 class="hero-title">{{ object.name }}</h1>
   </div>
@@ -46,7 +48,7 @@
 
   <div class="tab-content" id="countryTabContent">
     <div class="tab-pane fade show active" id="story" role="tabpanel">
-      <p class="lead">{{ object.story }}</p>
+      <p class="lead">{{ object.story|safe }}</p>
     </div>
 
     {% if object_type != "landmark" %}

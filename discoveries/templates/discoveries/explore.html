@@ -26,8 +26,12 @@
         <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden position-relative">
           
           <!-- Image -->
-          <div class="position-relative">
-            <img src="{{ country.cover_photo.url }}" class="card-img-top" alt="{{ country.name }}">
+          <div class="position-relative ratio ratio-4x3 rounded overflow-hidden">
+            {% if country.get_cover_photo %}
+              <img src="{{ country.get_cover_photo }}" class="w-100 h-100 object-fit-cover" alt="{{ item.name }}">
+            {% else %}
+              <div class="bg-danger text-white p-5 text-center">No image</div>
+            {% endif %}
             
             <!-- Heart Wishlist Button -->
             <div class="position-absolute top-0 end-0 m-3">
@@ -47,7 +51,7 @@
           <!-- Card Body -->
           <div class="card-body">
             <h5 class="card-title fw-bold">{{ country.name }}</h5>
-            <p class="card-text small text-muted">{{ country.story|truncatewords:20 }}</p>
+            <p class="card-text small text-muted">{{ country.story|truncatewords:20|safe }}</p>
 
             <!-- Star Rating -->
             <div class="text-warning small">

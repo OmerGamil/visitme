@@ -7,28 +7,40 @@ class PhotoInline(admin.TabularInline):
     extra = 1
     fields = ['image', 'caption']
 
+class LandmarkInline(admin.TabularInline):
+    model = Landmark
+    extra = 1
+    fields = ['name', 'slug', 'story', 'location']
+
+class CityInline(admin.TabularInline):
+    model = City
+    extra = 1 
+    fields = ['name', 'slug', 'story', 'cover_photo']
+
 @admin.register(Country)
 class CountryAdmin(SummernoteModelAdmin):
+    inlines = [CityInline]
     list_display = ('name', 'slug')
     prepopulated_fields = {'slug': ('name',)}
     summernote_fields = ('story',)
 
 @admin.register(City)
 class CityAdmin(SummernoteModelAdmin):
+    inlines = [LandmarkInline]
     list_display = ('name', 'slug', 'country')
     prepopulated_fields = {'slug': ('name',)}
     summernote_fields = ('story',)
 
 @admin.register(Landmark)
 class LandmarkAdmin(SummernoteModelAdmin):
+    inlines = [PhotoInline]
     list_display = ('name', 'slug', 'city')
     prepopulated_fields = {'slug': ('name',)}
     summernote_fields = ('story',)
-    inlines = [PhotoInline]
 
 @admin.register(Photo)
 class PhotoAdmin(admin.ModelAdmin):
-    list_display = ('landmark', 'caption')
+    list_display = ('landmark', 'caption', 'image_preview')
     search_fields = ('landmark__name', 'caption')
 
 @admin.register(Rating)
