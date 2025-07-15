@@ -146,7 +146,7 @@ body {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   background-color: rgba(0,0,0,0.4);
-  z-index: 1;
+  z-index: 0;
 }
 
 .hero-section > .container {
@@ -228,6 +228,10 @@ body {
   object-fit: cover;
 }
 
+.wishlist-btn {
+  background-color: white;
+}
+
 .wishlist-btn i {
   transition: color 0.3s ease;
 }
@@ -236,6 +240,99 @@ body {
   color: var(--brand-color);
 }
 
+.custom-tabs .nav-link {
+  font-weight: 600;
+  color: var(--heading-color);
+  border: none;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  margin: 0 0.5rem;
+  padding-bottom: 0.5rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.custom-tabs .nav-link.active {
+  color: var(--heading-color);
+  border-color: var(--heading-color);
+  font-weight: 700;
+}
+
+.city-image-wrapper img {
+  object-fit: cover;
+  height: 100%;
+}
+
+@media screen and (min-width: 768px) {
+  .city-image-wrapper {
+    max-width: 300px;
+  }
+  
+}
+
+/* Modal Custom Styling */
+.modal-content.custom-modal {
+  border-radius: 1rem;
+  border: none;
+  padding: 2rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header.custom-modal-header {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.modal-title {
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+.modal-body textarea {
+  resize: none;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  font-size: 1rem;
+  border: 1px solid var(--border-color);
+  box-shadow: none;
+  transition: border-color 0.2s ease;
+}
+
+.modal-body textarea:focus {
+  border-color: var(--brand-color);
+  outline: none;
+  box-shadow: 0 0 0 0.25rem rgba(255, 56, 92, 0.1);
+}
+
+.modal-footer.custom-footer {
+  border-top: none;
+  padding-top: 0;
+  gap: 1rem;
+}
+
+.btn-skip {
+  background-color: var(--bg-light);
+  color: var(--heading-color);
+  font-weight: 500;
+  border-radius: 50px;
+  padding: 0.5rem 1.5rem;
+}
+
+.btn-skip:hover {
+  background-color: var(--border-color);
+}
+
+.btn-submit-comment {
+  background-color: var(--brand-color);
+  border-radius: 50px;
+  padding: 0.5rem 1.5rem;
+  color: var(--bg-light);
+  font-weight: 600;
+  border: none;
+}
+
+.btn-submit-comment:hover {
+  background-color: var(--brand-color-hover);
+}
 
 /* Footer */
 footer {

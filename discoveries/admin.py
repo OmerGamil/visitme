@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Country, City, Landmark, Photo, Rating, Comment
+from .models import Country, City, Landmark, Photo, Rating, Comment, Wishlist
 from django_summernote.admin import SummernoteModelAdmin
 
 class PhotoInline(admin.TabularInline): 
@@ -41,4 +41,10 @@ class RatingAdmin(admin.ModelAdmin):
 class CommentAdmin(admin.ModelAdmin):
     list_display = ('content_object', 'user', 'created_at')
     search_fields = ('user__username', 'text')
+    list_filter = ('created_at',)
+
+@admin.register(Wishlist)
+class WishlistAdmin(admin.ModelAdmin):
+    list_display = ('content_object', 'user', 'created_at')
+    search_fields = ('user__username',)
     list_filter = ('created_at',)

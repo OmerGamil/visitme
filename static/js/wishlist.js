@@ -7,16 +7,28 @@ document.addEventListener("DOMContentLoaded", () => {
       const contentTypeId = this.dataset.contentType;
       const objectId = this.dataset.objectId;
 
+      const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
+      const csrfToken = csrfInput ? csrfInput.value : document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+
       fetch("/wishlist/toggle/", {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
-          "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+          "X-CSRFToken": csrfToken
         },
         body: `content_type_id=${contentTypeId}&object_id=${objectId}`
       })
-      .then(res => res.json())
+      .then(res => {
+        if (res.redirected && res.url.includes("/accounts/login")) {
+          alert("You're not logged in.");
+          window.location.href = `/accounts/login/?next=${encodeURIComponent(window.location.pathname)}`;
+          return;
+        }
+        return res.json();
+      })
       .then(data => {
+        if (!data) return;
+
         if (data.status === "added") {
           icon.classList.remove("bi-heart");
           icon.classList.add("bi-heart-fill", "text-danger");

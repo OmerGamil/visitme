@@ -1,36 +1,259 @@
 {% extends 'base.html' %}
+{% load custom_filters %}
 
 {% block title %}{{ country.name }} - Visit Me{% endblock %}
 
 {% block hero %}
-<section class="hero-section d-flex align-items-center text-white" style="background-image: url('{{ country.cover_photo.url }}'); min-height: 60vh;">
+<section class="hero-section d-flex align-items-center text-white position-relative" style="background-image: url('{{ country.cover_photo.url }}'); min-height: 60vh;">
   <div class="container text-center">
     <h1 class="hero-title">{{ country.name }}</h1>
-    <p class="lead">{{ country.story }}</p>
+  </div>
+
+  <!-- Rating Stars -->
+  <div class="position-absolute bottom-0 start-0 m-4 z-index-10">
+    <form id="rating-form" data-country-id="{{ country.id }}" data-content-type-id="{{ country.get_content_type.id }}" data-user-rating="{{ user_rating }}">
+      {% csrf_token %}
+      <div class="d-flex align-items-center gap-1 rating-stars" id="hero-star-rating">
+        {% for i in "12345" %}
+          <i class="bi bi-star fs-5 text-warning star"
+            data-value="{{ forloop.counter }}"
+            role="button"></i>
+        {% endfor %}
+        <span class="text-white ms-2" id="rating-value">{{ country.average_rating|default:"0" }}</span>
+      </div>
+    </form>
+  </div>
+
+  <!-- Rating Comment Modal -->
+  <div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content custom-modal">
+        
+        <div class="modal-header custom-modal-header">
+          <h5 class="modal-title" id="commentModalLabel">Leave a Comment</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <form id="comment-form">
+          <div class="modal-body">
+
+            <!-- Thank you and stars -->
+            <div class="text-center mb-3">
+              <h6 class="fw-bold text-dark">Thanks for rating!</h6>
+              <div id="modal-star-display" class="text-warning fs-5">
+                <!-- Stars will be injected via JS -->
+              </div>
+            </div>
+
+            <!-- Comment field -->
+            <textarea name="comment" class="form-control" rows="4" placeholder="Write your comment here..."></textarea>
+          </div>
+
+          <div class="modal-footer justify-content-end custom-footer">
+            <button type="button" class="btn btn-skip" data-bs-dismiss="modal">Skip</button>
+            <button type="submit" class="btn btn-submit-comment">Submit Comment</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wishlist Button (AJAX-Enabled) -->
+  <div class="position-absolute bottom-0 end-0 m-4 z-3">
+    <button
+      type="button"
+      class="wishlist-btn btn btn-light rounded-circle shadow-sm d-flex align-items-center p-2"
+      data-content-type="{{ country.get_content_type.id }}"
+      data-object-id="{{ country.id }}"
+    >
+      {% if country.id in wishlist_ids %}
+        <i class="bi bi-heart-fill text-danger fs-5"></i>
+      {% else %}
+        <i class="bi bi-heart fs-5"></i>
+      {% endif %}
+    </button>
   </div>
 </section>
 {% endblock %}
 
+{% block padding %} py-0 {% endblock %}
 {% block content %}
-<div class="container my-5">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Cities in {{ country.name }}</h2>
-    <!-- Optional: Add rating modal trigger here -->
-  </div>
-  
-  <div class="row">
-    {% for city in cities %}
-    <div class="col-md-4 mb-4">
-      <div class="card h-100 shadow-sm">
-        <img src="{{ city.cover_photo.url }}" class="card-img-top" alt="{{ city.name }}">
-        <div class="card-body">
-          <h5 class="card-title">{{ city.name }}</h5>
-          <p class="card-text">{{ city.story|truncatewords:15 }}</p>
-          <a href="#" class="btn btn-outline-danger">Explore City</a>
+<div class="container ">
+  <!-- Country Tabs -->
+  <div class="container mt-4">
+    <ul class="nav nav-tabs custom-tabs justify-content-center border-0 mb-4" id="countryTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="story-tab" data-bs-toggle="tab" data-bs-target="#story" type="button" role="tab">
+          Story
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="cities-tab" data-bs-toggle="tab" data-bs-target="#cities" type="button" role="tab">
+          Cities
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">
+          Reviews
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="countryTabContent">
+      <div class="tab-pane fade show active" id="story" role="tabpanel">
+        <p class="lead">{{ country.story }}</p>
+      </div>
+      <div class="tab-pane fade" id="cities" role="tabpanel">
+        <form method="GET" class="d-flex justify-content-center mb-4">
+          <div class="search-wrapper d-flex align-items-center shadow-sm">
+            <span class="search-icon ms-3"><i class="bi bi-search"></i></span>
+            <input 
+              type="text" 
+              name="q" 
+              class="form-control border-0 shadow-none" 
+              placeholder="Search cities..." 
+              value="{{ request.GET.q }}">
+            <button type="submit" class="btn search-btn">Search</button>
+          </div>
+        </form>
+        {% for city in cities %}
+        <div class="card shadow-sm border-0 rounded-4 overflow-hidden position-relative d-flex flex-column flex-md-row">
+
+          <!-- Image Section -->
+          <div class="position-relative city-image-wrapper flex-shrink-0" style="width: 100%;">
+            <img src="{{ city.cover_photo.url }}" class="w-100 h-100 object-fit-cover" alt="{{ city.name }}">
+          </div>
+
+          <!-- Content -->
+          <div class="card-body d-flex flex-column justify-content-between p-4" style="flex: 1;">
+            <div>
+              <h5 class="fw-bold">{{ city.name }}</h5>
+              <p class="card-text small text-muted">{{ city.story|truncatewords:20 }}</p>
+            </div>
+            <div class="text-warning small mt-3">
+              {% with city.average_rating as rating %}
+                {% for i in "12345" %}
+                  {% if rating >= forloop.counter %}
+                    <i class="bi bi-star-fill"></i>
+                  {% elif rating >= forloop.counter0|add:"0.5" %}
+                    <i class="bi bi-star-half"></i>
+                  {% else %}
+                    <i class="bi bi-star"></i>
+                  {% endif %}
+                {% endfor %}
+                <span class="text-muted ms-1">{{ rating|default:"0" }}</span>
+              {% endwith %}
+            </div>
+            <!-- Wishlist button -->
+            <button class="wishlist-btn btn btn-light rounded-circle shadow-sm p-2 position-absolute bottom-0 end-0 m-2"
+                    data-content-type="{{ city.get_content_type.id }}"
+                    data-object-id="{{ city.id }}"
+                    aria-label="Wishlist"
+                    onclick="event.preventDefault(); event.stopPropagation();">
+              {% if city.id in wishlist_ids %}
+                <i class="bi bi-heart-fill text-danger fs-5"></i>
+              {% else %}
+                <i class="bi bi-heart fs-5"></i>
+              {% endif %}
+            </button>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="tab-pane fade" id="reviews" role="tabpanel">
+        <div class="container">
+        {% if user.is_authenticated %}
+          <!-- Leave a Review -->
+          <div class="card shadow-sm border-0 rounded-4 p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <strong class="text-danger">{{ user.username }} (You)</strong>
+              {% if user_comment %}
+                <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" id="edit-comment-btn">Edit</button>
+              {% endif %}
+            </div>
+
+            <!-- Review Display -->
+            <div id="comment-display" {% if not user_comment %}style="display:none;"{% endif %}>
+              {% if user_rating %}
+                <div class="text-warning mb-2">
+                  {% for i in "12345" %}
+                    {% if user_rating >= forloop.counter %}
+                      <i class="bi bi-star-fill"></i>
+                    {% elif user_rating >= forloop.counter0|add:"0.5" %}
+                      <i class="bi bi-star-half"></i>
+                    {% else %}
+                      <i class="bi bi-star"></i>
+                    {% endif %}
+                  {% endfor %}
+                  <span class="text-muted ms-2">{{ user_rating }}</span>
+                </div>
+              {% endif %}
+              <p id="user-comment-text" class="mb-0">{{ user_comment.text }}</p>
+              <div id="user-comment-time" class="text-muted small mt-1">{{ user_comment.created_at }}</div>
+            </div>
+
+            <!-- Review Form -->
+            <form id="user-comment-form" {% if user_comment %}style="display:none;"{% endif %} action="{% url 'submit_comment' %}" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="object_id" value="{{ country.id }}">
+              <input type="hidden" name="content_type_id" value="{{ country.get_content_type.id }}">
+
+              <!-- Star rating input (reused from hero) -->
+              <div class="d-flex align-items-center gap-1 rating-stars mb-3" id="form-star-rating">
+                {% for i in "12345" %}
+                  <i class="bi bi-star fs-5 text-warning star"
+                    data-value="{{ forloop.counter }}"
+                    role="button"></i>
+                {% endfor %}
+                <input type="hidden" name="stars" id="review-stars" value="{{ user_rating|default:"0" }}">
+              </div>
+
+              <!-- Textarea -->
+              <textarea name="text" class="form-control mb-3" rows="3" placeholder="Write your review...">{{ user_comment.text|default:"" }}</textarea>
+
+              <div class="d-flex justify-content-end gap-2">
+                {% if user_comment %}
+                  <button type="button" class="btn btn-secondary btn-sm" id="cancel-edit">Cancel</button>
+                {% endif %}
+                <button type="submit" class="btn btn-danger btn-sm">{{ user_comment|yesno:"Update Review,Leave Review" }}</button>
+              </div>
+            </form>
+          </div>
+        {% endif %}
+
+        <!-- Other User Reviews -->
+        {% for comment in reviews %}
+          <div class="card shadow-sm border-0 rounded-4 p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <strong>{{ comment.user.username }}</strong>
+              <small class="text-muted">{{ comment.created_at|date:"M d, Y H:i" }}</small>
+            </div>
+
+            {% with ratings_by_user|get_item:comment.user.id as rating %}
+              {% if rating %}
+                <div class="text-warning mb-2">
+                  {% for i in "12345" %}
+                    {% if rating >= forloop.counter %}
+                      <i class="bi bi-star-fill"></i>
+                    {% elif rating >= forloop.counter0|add:"0.5" %}
+                      <i class="bi bi-star-half"></i>
+                    {% else %}
+                      <i class="bi bi-star"></i>
+                    {% endif %}
+                  {% endfor %}
+                  <span class="text-muted ms-2">{{ rating }}</span>
+                </div>
+              {% endif %}
+            {% endwith %}
+
+            <p class="mb-0">{{ comment.text }}</p>
+          </div>
+        {% empty %}
+          <p class="text-muted">No reviews yet. Be the first to share your thoughts!</p>
+        {% endfor %}
         </div>
       </div>
     </div>
-    {% endfor %}
   </div>
 </div>
 {% endblock %}

@@ -35,7 +35,11 @@
                       data-content-type="{{ country.get_content_type.id }}"
                       data-object-id="{{ country.id }}"
                       aria-label="Wishlist">
-                <i class="bi {% if country in user.wishlist_items.all %}bi-heart-fill text-danger{% else %}bi-heart{% endif %} fs-5"></i>
+                {% if country.id in wishlist_ids %}
+                  <i class="bi bi-heart-fill text-danger fs-5"></i>
+                {% else %}
+                  <i class="bi bi-heart fs-5"></i>
+                {% endif %}
               </button>
             </div>
           </div>
