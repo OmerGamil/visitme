@@ -1,79 +1,86 @@
 {% extends 'base.html' %}
+{% load custom_filters %}
 
 {% block title %} Explore {% endblock %}
 
 {% block content %}
-
 <div class="container my-5">
-  <h2 class="text-center mb-2">Explore Countries</h2>
-  <p class="text-center text-muted mb-4">Discover the world's most beautiful countries and their hidden gems.</p>
-  <form method="GET" class="d-flex justify-content-center mb-4">
+  <!-- Page Title -->
+  <h2 class="text-center mb-2">Explore the World</h2>
+  <p class="text-center text-muted mb-4">Discover top-rated countries, cities, and landmarks</p>
+
+  <!-- Search Bar -->
+  <form method="GET" class="d-flex justify-content-center mb-5">
     <div class="search-wrapper d-flex align-items-center shadow-sm">
       <span class="search-icon ms-3"><i class="bi bi-search"></i></span>
       <input 
         type="text" 
         name="q" 
         class="form-control border-0 shadow-none" 
-        placeholder="Search countries..." 
-        value="{{ request.GET.q }}">
+        placeholder="Search countries, cities or landmarks..." 
+        value="{{ query }}">
       <button type="submit" class="btn search-btn">Search</button>
     </div>
   </form>
-  <div class="row row-cols-1 row-cols-md-3 g-4">
-    {% for country in countries %}
-    <div class="col">
-      <a href="{% url 'country_detail' slug=country.slug %}" class="text-decoration-none text-dark">
-        <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden position-relative">
-          
-          <!-- Image -->
-          <div class="position-relative ratio ratio-4x3 rounded overflow-hidden">
-            {% if country.get_cover_photo %}
-              <img src="{{ country.get_cover_photo }}" class="w-100 h-100 object-fit-cover" alt="{{ item.name }}">
-            {% else %}
-              <div class="bg-danger text-white p-5 text-center">No image</div>
-            {% endif %}
-            
-            <!-- Heart Wishlist Button -->
-            <div class="position-absolute top-0 end-0 m-3">
-              <button class="wishlist-btn btn btn-light rounded-circle shadow-sm p-2"
-                      data-content-type="{{ country.get_content_type.id }}"
-                      data-object-id="{{ country.id }}"
-                      aria-label="Wishlist">
-                {% if country.id in wishlist_ids %}
-                  <i class="bi bi-heart-fill text-danger fs-5"></i>
-                {% else %}
-                  <i class="bi bi-heart fs-5"></i>
-                {% endif %}
-              </button>
+
+  <!-- 🌍 Countries -->
+  <h3 class="mb-3">Explore Countries</h3>
+  {% if countries %}
+    <div class="swiper-container-wrapper position-relative mb-5">
+      <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+          {% for item in countries %}
+            <div class="swiper-slide py-3">
+              {% include 'discoveries/partials/card.html' with item=item type='country' %}
             </div>
-          </div>
-
-          <!-- Card Body -->
-          <div class="card-body">
-            <h5 class="card-title fw-bold">{{ country.name }}</h5>
-            <p class="card-text small text-muted">{{ country.story|truncatewords:20|safe }}</p>
-
-            <!-- Star Rating -->
-            <div class="text-warning small">
-              {% with country.average_rating as rating %}
-                {% for i in "12345" %}
-                  {% if rating >= forloop.counter %}
-                    <i class="bi bi-star-fill"></i>
-                  {% elif rating >= forloop.counter0|add:"0.5" %}
-                    <i class="bi bi-star-half"></i>
-                  {% else %}
-                    <i class="bi bi-star"></i>
-                  {% endif %}
-                {% endfor %}
-                <span class="text-muted ms-1">{{ rating }}</span>
-              {% endwith %}
-            </div>
-          </div>
-
+          {% endfor %}
         </div>
-      </a>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+      </div>
     </div>
-    {% endfor %}
-  </div>
+  {% else %}
+    <p class="text-muted">No countries found.</p>
+  {% endif %}
+
+  <!-- 🏙 Cities -->
+  <h3 class="mb-3">Explore Cities</h3>
+  {% if cities %}
+    <div class="swiper-container-wrapper position-relative mb-5">
+      <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+          {% for item in cities %}
+            <div class="swiper-slide py-3">
+              {% include 'discoveries/partials/card.html' with item=item type='city' %}
+            </div>
+          {% endfor %}
+        </div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+      </div>
+    </div>
+  {% else %}
+    <p class="text-muted">No cities found.</p>
+  {% endif %}
+
+  <!-- 📍 Landmarks -->
+  <h3 class="mb-3">Explore Landmarks</h3>
+  {% if landmarks %}
+    <div class="swiper-container-wrapper position-relative">
+      <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+          {% for item in landmarks %}
+            <div class="swiper-slide py-3">
+              {% include 'discoveries/partials/card.html' with item=item type='landmark' %}
+            </div>
+          {% endfor %}
+        </div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+      </div>
+    </div>
+  {% else %}
+    <p class="text-muted">No landmarks found.</p>
+  {% endif %}
 </div>
 {% endblock %}

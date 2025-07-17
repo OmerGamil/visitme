@@ -10,6 +10,7 @@ class Country(models.Model):
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(unique=True)
     story = models.TextField()
+    brief = models.CharField(max_length=300, blank=True, help_text="Optional summary for cards.")
     cover_photo = CloudinaryField('image', blank=True, null=True)
 
     def __str__(self):
@@ -55,6 +56,7 @@ class City(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
     story = models.TextField()
+    brief = models.CharField(max_length=300, blank=True, help_text="Optional summary for cards.")
     country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="cities")
     cover_photo = CloudinaryField('image', blank=True, null=True)
 
@@ -103,6 +105,7 @@ class Landmark(models.Model):
     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name="landmarks")
     location = models.CharField(max_length=255)
     story = models.TextField()
+    brief = models.CharField(max_length=300, blank=True, help_text="Optional summary for cards.")
 
     def __str__(self):
         return f"{self.name} in {self.city.name}"

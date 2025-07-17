@@ -1,7 +1,7 @@
-from django.views.generic import ListView, DetailView
+from django.views.generic import TemplateView, DetailView
 from django.http import JsonResponse
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Q
+from django.db.models import Q, Avg
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
@@ -91,28 +91,62 @@ class DetailContextMixin:
 
 # ---------- VIEWS ----------
 
-class CountryListView(ListView):
-    model = Country
+class ExploreView(TemplateView):
     template_name = 'discoveries/explore.html'
-    context_object_name = 'countries'
-
-    def get_queryset(self):
-        query = self.request.GET.get("q")
-        if query:
-            return Country.objects.filter(name__icontains=query)
-        return Country.objects.all()
 
     def get_context_data(self, **kwargs):
+        from django.db.models import OuterRef, Subquery
         context = super().get_context_data(**kwargs)
-        if self.request.user.is_authenticated:
-            country_type = ContentType.objects.get_for_model(Country)
-            wishlist_ids = Wishlist.objects.filter(
-                user=self.request.user,
-                content_type=country_type
-            ).values_list('object_id', flat=True)
-            context['wishlist_ids'] = list(wishlist_ids)
+        query = self.request.GET.get("q", "")
+        user = self.request.user
+
+        # Content types for sorting & wishlist
+        ct_country = ContentType.objects.get_for_model(Country)
+        ct_city = ContentType.objects.get_for_model(City)
+        ct_landmark = ContentType.objects.get_for_model(Landmark)
+
+        # Wishlist sets by type
+        wishlist_ids = {
+            ct_country.id: set(),
+            ct_city.id: set(),
+            ct_landmark.id: set(),
+        }
+
+        if user.is_authenticated:
+            wishlist = Wishlist.objects.filter(user=user)
+            for item in wishlist:
+                wishlist_ids[item.content_type_id].add(item.object_id)
+            context["wishlist_ids"] = list(wishlist.values_list("object_id", flat=True))
         else:
-            context['wishlist_ids'] = []
+            context["wishlist_ids"] = []
+
+        # Helper to annotate avg rating using Subquery and sort wishlist first
+        def get_sorted_queryset(model, ct_obj, search_field="name"):
+            qs = model.objects.all()
+            if query:
+                qs = qs.filter(**{f"{search_field}__icontains": query})
+
+            rating_avg_sub = Rating.objects.filter(
+                content_type=ct_obj,
+                object_id=OuterRef("pk")
+            ).values("object_id").annotate(avg=Avg("stars")).values("avg")
+
+            qs = qs.annotate(avg_rating=Subquery(rating_avg_sub))
+
+            qs = list(qs)
+            qs.sort(
+                key=lambda obj: (
+                    0 if obj.id in wishlist_ids[ct_obj.id] else 1,
+                    -(obj.avg_rating or 0)
+                )
+            )
+            return qs
+
+        context["query"] = query
+        context["countries"] = get_sorted_queryset(Country, ct_country)
+        context["cities"] = get_sorted_queryset(City, ct_city)
+        context["landmarks"] = get_sorted_queryset(Landmark, ct_landmark)
+
         return context
 
 

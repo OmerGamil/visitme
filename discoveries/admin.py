@@ -10,12 +10,12 @@ class PhotoInline(admin.TabularInline):
 class LandmarkInline(admin.TabularInline):
     model = Landmark
     extra = 1
-    fields = ['name', 'slug', 'story', 'location']
+    fields = ['name', 'slug', 'story', 'location', 'brief']
 
 class CityInline(admin.TabularInline):
     model = City
     extra = 1 
-    fields = ['name', 'slug', 'story', 'cover_photo']
+    fields = ['name', 'slug', 'story', 'cover_photo', 'brief']
 
 @admin.register(Country)
 class CountryAdmin(SummernoteModelAdmin):
