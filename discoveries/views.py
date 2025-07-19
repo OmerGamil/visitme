@@ -100,27 +100,24 @@ class ExploreView(TemplateView):
         query = self.request.GET.get("q", "")
         user = self.request.user
 
-        # Content types for sorting & wishlist
         ct_country = ContentType.objects.get_for_model(Country)
         ct_city = ContentType.objects.get_for_model(City)
         ct_landmark = ContentType.objects.get_for_model(Landmark)
 
-        # Wishlist sets by type
-        wishlist_ids = {
-            ct_country.id: set(),
-            ct_city.id: set(),
-            ct_landmark.id: set(),
-        }
+        wishlist_map = {}
 
         if user.is_authenticated:
             wishlist = Wishlist.objects.filter(user=user)
             for item in wishlist:
-                wishlist_ids[item.content_type_id].add(item.object_id)
-            context["wishlist_ids"] = list(wishlist.values_list("object_id", flat=True))
+                wishlist_map[(item.content_type_id, item.object_id)] = True
+            context["wishlist_ids"] = list(wishlist.values_list("object_id", flat=True))  # Optional, for backward compat
         else:
             context["wishlist_ids"] = []
 
-        # Helper to annotate avg rating using Subquery and sort wishlist first
+        def mark_wishlist_status(objects, ct_obj):
+            for obj in objects:
+                obj.is_wishlisted = (ct_obj.id, obj.id) in wishlist_map
+
         def get_sorted_queryset(model, ct_obj, search_field="name"):
             qs = model.objects.all()
             if query:
@@ -132,12 +129,16 @@ class ExploreView(TemplateView):
             ).values("object_id").annotate(avg=Avg("stars")).values("avg")
 
             qs = qs.annotate(avg_rating=Subquery(rating_avg_sub))
-
             qs = list(qs)
+            for obj in qs:
+                obj.avg_rating = obj.avg_rating or 0
+
+            mark_wishlist_status(qs, ct_obj)
+
             qs.sort(
                 key=lambda obj: (
-                    0 if obj.id in wishlist_ids[ct_obj.id] else 1,
-                    -(obj.avg_rating or 0)
+                    0 if obj.is_wishlisted else 1,
+                    -obj.avg_rating
                 )
             )
             return qs
@@ -148,6 +149,7 @@ class ExploreView(TemplateView):
         context["landmarks"] = get_sorted_queryset(Landmark, ct_landmark)
 
         return context
+
 
 
 class CountryDetailView(DetailContextMixin, DetailView):

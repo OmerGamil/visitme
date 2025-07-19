@@ -16,7 +16,7 @@
                   data-content-type="{{ item.get_content_type.id }}"
                   data-object-id="{{ item.id }}"
                   aria-label="Wishlist">
-            {% if item.id in wishlist_ids %}
+            {% if item.is_wishlisted %}
               <i class="bi bi-heart-fill text-danger fs-5"></i>
             {% else %}
               <i class="bi bi-heart fs-5"></i>

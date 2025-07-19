@@ -23,7 +23,7 @@
   <!-- Custom CSS -->
   <link rel="stylesheet" href="{% static 'css/style.css' %}" />
 </head>
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100 {% block body_class %}{% endblock %}">
 {% csrf_token %}
   <!-- Header -->
   <header class="bg-white border-bottom">
@@ -46,8 +46,8 @@
           <!-- Navigation Links -->
           <ul class="navbar-nav mx-auto mt-2 mb-4 mb-lg-0">
             <li class="nav-item"><a class="nav-link mx-lg-4 fw-semibold {% if request.path == '/explore/' %}active{% endif %}" href="{% url 'explore' %}">Explore</a></li>
-            <li class="nav-item"><a class="nav-link mx-lg-4 fw-semibold {% if request.path == '/hidden-gems/' %}active{% endif %}" href="#">Hidden Gems</a></li>
-            <li class="nav-item"><a href="#" class="nav-link mx-lg-4 fw-semibold {% if request.path == '/about/' %}active{% endif %}">About</a></li>
+            <li class="nav-item"><a class="nav-link mx-lg-4 fw-semibold {% if request.path == '/hidden-gems/' %}active{% endif %}" href="{% url 'hidden_gems' %}">Hidden Gems</a></li>
+            <li class="nav-item"><a href="{% url 'about' %}" class="nav-link mx-lg-4 fw-semibold {% if request.path == '/about/' %}active{% endif %}">About</a></li>
           </ul>
 
           <!-- Auth Controls -->

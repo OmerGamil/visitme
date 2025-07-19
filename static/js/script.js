@@ -46,3 +46,26 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+  const sliders = document.querySelectorAll(".bg-slider");
+
+  sliders.forEach(slider => {
+    let imageListRaw = slider.dataset.images;
+
+    try {
+      const imageList = JSON.parse(imageListRaw);
+      if (!Array.isArray(imageList) || imageList.length === 0) return;
+
+      let index = 0;
+      slider.style.backgroundImage = `url('${imageList[0]}')`;
+
+      setInterval(() => {
+        index = (index + 1) % imageList.length;
+        slider.style.backgroundImage = `url('${imageList[index]}')`;
+      }, 4000);
+    } catch (err) {
+      console.error("Slideshow JSON error:", err);
+    }
+  });
+});
