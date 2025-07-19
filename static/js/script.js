@@ -48,24 +48,40 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 document.addEventListener("DOMContentLoaded", function () {
-  const sliders = document.querySelectorAll(".bg-slider");
+  const section = document.querySelector(".hero-section");
+  const layers = section.querySelectorAll(".hero-slider-layer");
+  const raw = section.dataset.images;
 
-  sliders.forEach(slider => {
-    let imageListRaw = slider.dataset.images;
+  let images;
+  try {
+    images = JSON.parse(raw);
+  } catch (e) {
+    console.error("Slideshow image parse error:", e);
+    return;
+  }
 
-    try {
-      const imageList = JSON.parse(imageListRaw);
-      if (!Array.isArray(imageList) || imageList.length === 0) return;
+  if (!images.length) return;
 
-      let index = 0;
-      slider.style.backgroundImage = `url('${imageList[0]}')`;
+  let current = 0;
+  layers[0].style.backgroundImage = `url('${images[0]}')`;
+  layers[0].classList.add("active");
 
-      setInterval(() => {
-        index = (index + 1) % imageList.length;
-        slider.style.backgroundImage = `url('${imageList[index]}')`;
-      }, 4000);
-    } catch (err) {
-      console.error("Slideshow JSON error:", err);
-    }
-  });
+  function preload(src, callback) {
+    const img = new Image();
+    img.onload = callback;
+    img.src = src;
+  }
+
+  setInterval(() => {
+    const next = (current + 1) % images.length;
+    const nextLayer = layers[1 - (current % 2)];
+    const activeLayer = layers[current % 2];
+
+    preload(images[next], () => {
+      nextLayer.style.backgroundImage = `url('${images[next]}')`;
+      nextLayer.classList.add("active");
+      activeLayer.classList.remove("active");
+      current = next;
+    });
+  }, 3000);
 });
