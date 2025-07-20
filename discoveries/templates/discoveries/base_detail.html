@@ -6,6 +6,10 @@
 {% block hero %}
 {% with cover_photo=object.cover_photo.url|default:object.get_cover_photo %}
 <section class="hero-section d-flex align-items-center text-white position-relative" style="background-image: url('{{ cover_photo }}'); min-height: 60vh;">
+
+  <!-- Overlay for dark tint -->
+  <div class="hero-overlay"></div>
+  
 {% endwith %}
   <div class="container text-center">
     <h1 class="hero-title">{{ object.name }}</h1>
