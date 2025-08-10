@@ -1,13 +1,125 @@
 {% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Visit Me - Home{% endblock %}
+
+{% block hero %}
+<section class="hero-section d-flex align-items-center justify-content-center position-relative text-white bg-slider"
+         data-images="[&quot;{% static 'images/hero-1.jpg' %}&quot;, &quot;{% static 'images/hero-2.jpg' %}&quot;, &quot;{% static 'images/hero-3.jpg' %}&quot;, &quot;{% static 'images/hero-4.jpg' %}&quot;]">
+
+  <!-- Background layers -->
+  <div class="hero-slider-layer active"></div>
+  <div class="hero-slider-layer"></div>
+
+  <!-- Overlay for dark tint -->
+  <div class="hero-overlay"></div>
+
+  <div class="container position-relative z-2">
+    <div class="hero-content text-center text-white">
+      <h1 class="hero-title">Where Will You Go Next?</h1>
+      <p class="hero-subtitle">Explore top attractions and hidden gems across the globe</p>
+
+      <!-- Search Bar -->
+      <form action="{% url 'explore' %}" method="get" class="search-bar mt-4 d-flex justify-content-center">
+        <div class="search-wrapper d-flex align-items-center shadow-sm">
+          <span class="search-icon ms-3"><i class="bi bi-search"></i></span>
+          <input 
+            type="text" 
+            name="q" 
+            class="form-control border-0 shadow-none" 
+            placeholder="Places to go, cities to visit..." 
+            value="{{ request.GET.q }}">
+          <button type="submit" class="btn search-btn">Search</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
 {% block content %}
+<div class="container my-5">
+  <!-- 🌍 Top Countries -->
+  <h3 class="mb-3 fw-bold">Top Rated Countries</h3>
+  {% if top_countries %}
+    <div class="swiper-container-wrapper position-relative mb-5">
+      <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+          {% for item in top_countries %}
+            <div class="swiper-slide py-3">
+              {% include 'discoveries/partials/card.html' with item=item type='country' %}
+            </div>
+          {% endfor %}
+        </div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+      </div>
+    </div>
+  {% else %}
+    <p class="text-muted">No countries found.</p>
+  {% endif %}
 
-<div class="text-center py-5">
-    <h1 class="display-4">Welcome to Visit Me</h1>
-    <p class="lead">Discover the most famous landmarks and hidden gems around the world — curated just for you.</p>
+  <!-- 🏙 Top Cities -->
+  <h3 class="mb-3 fw-bold">Top Rated Cities</h3>
+  {% if top_cities %}
+    <div class="swiper-container-wrapper position-relative mb-5">
+      <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+          {% for item in top_cities %}
+            <div class="swiper-slide py-3">
+              {% include 'discoveries/partials/card.html' with item=item type='city' %}
+            </div>
+          {% endfor %}
+        </div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+      </div>
+    </div>
+  {% else %}
+    <p class="text-muted">No cities found.</p>
+  {% endif %}
 
-    <a href="" class="btn btn-primary btn-lg mt-4">
-        Explore General Discoveries
-    </a>
+  <!-- 📍 Top Landmarks -->
+  <h3 class="mb-3 fw-bold">Top Rated Landmarks</h3>
+  {% if top_landmarks %}
+    <div class="swiper-container-wrapper position-relative mb-5">
+      <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+          {% for item in top_landmarks %}
+            <div class="swiper-slide py-3">
+              {% include 'discoveries/partials/card.html' with item=item type='landmark' %}
+            </div>
+          {% endfor %}
+        </div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+      </div>
+    </div>
+  {% else %}
+    <p class="text-muted">No landmarks found.</p>
+  {% endif %}
+
+  <!-- ❤️ User Wishlist -->
+  {% if user.is_authenticated %}
+  <h3 class="mb-3 fw-bold">Your Wishlist</h3>
+  {% if user_wishlist %}
+    <div class="swiper-container-wrapper position-relative mb-5">
+      <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+          {% for item in user_wishlist %}
+            <div class="swiper-slide py-3">
+              {% include 'discoveries/partials/card.html' with item=item type=item.get_content_type.model %}
+            </div>
+          {% endfor %}
+        </div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+      </div>
+    </div>
+  {% else %}
+    <p class="text-muted">Your wishlist is empty.</p>
+  {% endif %}
+  {% endif %}
 </div>
-
 {% endblock %}

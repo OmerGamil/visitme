@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}{{ object.name }} - Visit Me{% endblock %}
+
+{% block hero %}
+{% with cover_photo=object.cover_photo.url|default:object.get_cover_photo %}
+<section class="hero-section d-flex align-items-center text-white position-relative" style="background-image: url('{{ cover_photo }}'); min-height: 60vh;">
+
+  <!-- Overlay for dark tint -->
+  <div class="hero-overlay"></div>
+  
+{% endwith %}
+  <div class="container text-center">
+    <h1 class="hero-title">{{ object.name }}</h1>
+  </div>
+
+  <div class="position-absolute bottom-0 start-0 m-4 z-3">
+    {% include 'discoveries/partials/rating_stars.html' %}
+  </div>
+  {% include 'discoveries/partials/wishlist_button.html' %}
+</section>
+
+{% include 'discoveries/partials/rating_modal.html' %}
+{% endblock %}
+
+{% block padding %} py-0 {% endblock %}
+
+{% block content %}
+<div class="container my-4">
+  <ul class="nav nav-tabs custom-tabs justify-content-center border-0 mb-4" id="countryTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="story-tab" data-bs-toggle="tab" data-bs-target="#story" type="button" role="tab">
+        Story
+      </button>
+    </li>
+
+    {% if object_type != "landmark" %}
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="middle-tab" data-bs-toggle="tab" data-bs-target="#middle" type="button" role="tab">
+          {% if object_type == "country" %}Cities{% elif object_type == "city" %}Landmarks{% endif %}
+        </button>
+      </li>
+    {% endif %}
+
+    <li class="nav-item" role="presentation">
+      <button class="nav-link {% if object_type == 'landmark' %}ms-3{% endif %}" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">
+        Reviews
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content" id="countryTabContent">
+    <div class="tab-pane fade show active story" id="story" role="tabpanel">
+      <p class="lead">{{ object.story|safe }}</p>
+    </div>
+
+    {% if object_type != "landmark" %}
+      <div class="tab-pane fade" id="middle" role="tabpanel">
+        {% include 'discoveries/partials/middle_list.html' %}
+      </div>
+    {% endif %}
+
+    <div class="tab-pane fade" id="reviews" role="tabpanel">
+      {% include 'discoveries/partials/reviews_section.html' %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %} Explore {% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <!-- Page Title -->
+  <h2 class="text-center fw-bold mb-2">Explore the World</h2>
+  <p class="text-center text-muted mb-4">Discover top-rated countries, cities, and landmarks</p>
+
+  <!-- Search Bar -->
+  <form method="GET" class="d-flex justify-content-center mb-5">
+    <div class="search-wrapper d-flex align-items-center shadow-sm">
+      <span class="search-icon ms-3"><i class="bi bi-search"></i></span>
+      <input 
+        type="text" 
+        name="q" 
+        class="form-control border-0 shadow-none" 
+        placeholder="Search countries, cities or landmarks..." 
+        value="{{ query }}">
+      <button type="submit" class="btn search-btn">Search</button>
+    </div>
+  </form>
+
+  <!-- 🌍 Countries -->
+  <h3 class="mb-3 fw-bold">Explore Countries</h3>
+  {% if countries %}
+    <div class="swiper-container-wrapper position-relative mb-5">
+      <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+          {% for item in countries %}
+            <div class="swiper-slide py-3">
+              {% include 'discoveries/partials/card.html' with item=item type='country' %}
+            </div>
+          {% endfor %}
+        </div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+      </div>
+    </div>
+  {% else %}
+    <p class="text-muted">No countries found.</p>
+  {% endif %}
+
+  <!-- 🏙 Cities -->
+  <h3 class="mb-3 fw-bold">Explore Cities</h3>
+  {% if cities %}
+    <div class="swiper-container-wrapper position-relative mb-5">
+      <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+          {% for item in cities %}
+            <div class="swiper-slide py-3">
+              {% include 'discoveries/partials/card.html' with item=item type='city' %}
+            </div>
+          {% endfor %}
+        </div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+      </div>
+    </div>
+  {% else %}
+    <p class="text-muted">No cities found.</p>
+  {% endif %}
+
+  <!-- 📍 Landmarks -->
+  <h3 class="mb-3 fw-bold">Explore Landmarks</h3>
+  {% if landmarks %}
+    <div class="swiper-container-wrapper position-relative">
+      <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+          {% for item in landmarks %}
+            <div class="swiper-slide py-3">
+              {% include 'discoveries/partials/card.html' with item=item type='landmark' %}
+            </div>
+          {% endfor %}
+        </div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+      </div>
+    </div>
+  {% else %}
+    <p class="text-muted">No landmarks found.</p>
+  {% endif %}
+</div>
+{% endblock %}

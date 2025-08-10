@@ -1,0 +1,5 @@
+{% extends 'discoveries/base_detail.html' %}
+
+{% with object_type="country" %}
+  {% block content %}{{ block.super }}{% endblock %}
+{% endwith %}

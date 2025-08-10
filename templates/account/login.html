@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block title %}Login{% endblock %}
+{% block navbar_class %}scrolled{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 500px;">
+  <h2 class="text-center mb-4 text-danger">Login to Your Account</h2>
+  <form method="post" action="{% url 'account_login' %}">
+    {% csrf_token %}
+    {{ form|crispy }}
+    {% if redirect_field_value %}
+      <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
+    {% endif %}
+    <button class="btn btn-danger w-100 mt-3" type="submit">{% trans "Login" %}</button>
+    <div class="text-center mt-3">
+      <a href="{% url 'account_reset_password' %}" class="text-muted">{% trans "Forgot Password?" %}</a>
+    </div>
+  </form>
+  <p class="mt-4 text-center">
+    {% trans "Don't have an account?" %}
+    <a href="{% url 'account_signup' %}" class="text-danger">{% trans "Register here" %}</a>
+  </p>
+</div>
+{% endblock %}

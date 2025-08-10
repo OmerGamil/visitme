@@ -1,0 +1,51 @@
+<div class="col">
+  <a href="{% url type|add:'_detail' slug=item.slug %}" class="text-decoration-none text-dark">
+    <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden position-relative">
+      
+      <!-- Image -->
+      <div class="position-relative ratio ratio-4x3 rounded overflow-hidden">
+        {% if item.get_cover_photo %}
+          <img src="{{ item.get_cover_photo }}" class="w-100 h-100 object-fit-cover" alt="{{ item.name }}">
+        {% else %}
+          <div class="bg-secondary text-white p-5 text-center">No image</div>
+        {% endif %}
+
+        <!-- Heart Wishlist Button -->
+        <div class="position-absolute top-0 end-0 m-3">
+          <button class="wishlist-btn btn btn-light rounded-circle shadow-sm p-2"
+                  data-content-type="{{ item.get_content_type.id }}"
+                  data-object-id="{{ item.id }}"
+                  aria-label="Wishlist">
+            {% if item.is_wishlisted %}
+              <i class="bi bi-heart-fill text-danger fs-5"></i>
+            {% else %}
+              <i class="bi bi-heart fs-5"></i>
+            {% endif %}
+          </button>
+        </div>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body">
+        <h5 class="card-title fw-bold">{{ item.name }}</h5>
+        <p class="card-text small text-muted">{{ item.brief|default:item.story|truncatewords:20|safe }}</p>
+
+        <!-- Star Rating -->
+        <div class="text-warning small">
+          {% with item.average_rating as rating %}
+            {% for i in "12345" %}
+              {% if rating >= forloop.counter %}
+                <i class="bi bi-star-fill"></i>
+              {% elif rating >= forloop.counter0|add:"0.5" %}
+                <i class="bi bi-star-half"></i>
+              {% else %}
+                <i class="bi bi-star"></i>
+              {% endif %}
+            {% endfor %}
+            <span class="text-muted ms-1">{{ rating }}</span>
+          {% endwith %}
+        </div>
+      </div>
+    </div>
+  </a>
+</div>

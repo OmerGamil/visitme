@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Log Out{% endblock %}
+{% block navbar_class %}scrolled{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 500px;">
+  <h2 class="text-center text-danger mb-4">{% trans "Are you sure you want to log out?" %}</h2>
+  <form method="post" action="{% url 'account_logout' %}" class="text-center">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">{% trans "Log out" %}</button>
+  </form>
+</div>
+{% endblock %}
