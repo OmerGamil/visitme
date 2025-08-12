@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Visit Me{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  <!-- Project Intro -->
+  <div class="row align-items-center justify-content-center mb-5">
+    <div class="col-lg-4 text-center mb-4 mb-lg-0">
+      <img src="{% static 'images/omer-profile.jpeg' %}" alt="Omer Ahmed"
+           class="profile-img img-fluid shadow">
+    </div>
+    <div class="col-lg-7">
+      <h1 class="fw-bold">About the Project</h1>
+      <p class="text-muted">
+        <strong>Visit Me</strong> is more than a travel app — it's a platform designed to bridge curiosity with discovery.
+        The idea began as part of my final project for the Full-Stack Web Development diploma at Code Institute,
+        and evolved into a passion-driven solution to help people explore both famous destinations and hidden corners of the world.
+      </p>
+      <p class="text-muted">
+        We’re building a travel space where users can not only find beautiful countries, cities, and landmarks, but soon,
+        contribute their own discoveries through the upcoming <strong>Hidden Gems</strong> section. Whether it’s a quiet spot in a park,
+        a tucked-away cafe, or a breathtaking view off the beaten path — Visit Me will become a community where these
+        gems can be shared, rated, and remembered.
+      </p>
+    </div>
+  </div>
+
+  <!-- Developer Bio -->
+  <div class="mb-5">
+    <h2 class="fw-bold">About the Developer</h2>
+    <p class="text-muted">
+      I'm <strong>Omer Ahmed</strong>, a full-stack web developer based in Austria with a deep appreciation for design, storytelling,
+      and meaningful user experience. Before entering web development, I spent time learning and experimenting with digital design, content creation,
+      and community-building platforms. This background shaped how I approach building tools that don’t just function — they connect.
+    </p>
+    <p class="text-muted">
+      Throughout my journey at Code Institute, I embraced Django as my primary backend framework, combining it with PostgreSQL, Bootstrap, and JavaScript
+      to create a responsive, scalable, and interactive product. Every piece of the app — from rating systems to wishlists — was handcrafted to reflect real-world usability.
+    </p>
+    <p class="text-muted">
+      I believe technology should empower people to connect more deeply with the world around them. That’s what I hope Visit Me will do.
+    </p>
+  </div>
+
+  <!-- Mission / Future Vision -->
+  <div class="mb-5">
+    <h2 class="fw-bold">Where It’s Going</h2>
+    <p class="text-muted">
+      The first phase of Visit Me focuses on curated listings. The next phase will empower users to shape the platform — through uploading their own hidden places,
+      reviewing, commenting, and building a shared travel culture built on local love and global curiosity.
+    </p>
+    <p class="text-muted">
+      My goal is to eventually evolve Visit Me into a mobile-first app with real-time contributions, user profiles, and map-based discovery —
+      a go-to community for curious explorers everywhere.
+    </p>
+  </div>
+
+  <!-- Thanks -->
+  <div class="mb-5">
+    <h2 class="fw-bold">A Note of Thanks</h2>
+    <p class="text-muted">
+      I’m incredibly thankful for the learning experience provided by <strong>Code Institute</strong>, and especially to
+      <strong>Mr. Spencer Barriball</strong>, whose insightful mentorship, kind feedback, and dedication helped guide this project from concept to reality.
+      Also, thanks to every peer and instructor who shared knowledge along the way — I wouldn't be here without that community.
+    </p>
+  </div>
+</div>
+{% endblock %}
