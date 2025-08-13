@@ -8,6 +8,20 @@
   <meta name="csrf-token" content="{{ csrf_token }}">
   <title>{% block title %}Visit Me{% endblock %}</title>
 
+  <!-- Open Graph for LinkedIn, Facebook, etc. -->
+  <meta property="og:title" content="VisitMe - Discover Hidden Gems Worldwide">
+  <meta property="og:description" content="VisitMe helps travelers find both popular attractions and hidden gems in countries around the world.">
+  <meta property="og:image" content="{% static 'images/preview.jpg' %}">
+  <meta property="og:url" content="https://visitme-04442a94a758.herokuapp.com/">
+  <meta property="og:type" content="website">
+
+  <!-- Twitter Card for Twitter/X -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="VisitMe - Discover Hidden Gems Worldwide">
+  <meta name="twitter:description" content="VisitMe helps travelers find both popular attractions and hidden gems in countries around the world.">
+  <meta name="twitter:image" content="{% static 'images/preview.jpg' %}">
+
+
   <!-- Google Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
