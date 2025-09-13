@@ -1,1 +1,1 @@
-web: gunicorn visitme.wsgi
+web: gunicorn visitme.wsgi --log-file -
