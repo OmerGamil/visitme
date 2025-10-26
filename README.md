@@ -5,7 +5,7 @@ Visit Me is a Django 5 web application that helps travellers discover and save t
 ---
 
 ## Live Demo
-- **Production:** [https://visitme-04442a94a758.herokuapp.com/](VisitMe)
+- **Production:** [https://visitme-04442a94a758.herokuapp.com/](https://visitme-04442a94a758.herokuapp.com/)
 
 ---
 
@@ -217,7 +217,7 @@ This project is released under the MIT License.
 
 ---
 
-**Live Demo:** [https://visitme-04442a94a758.herokuapp.com/](VisitMe)
+**Live Demo:** [https://visitme-04442a94a758.herokuapp.com/](https://visitme-04442a94a758.herokuapp.com/)
 
 **Author:** Omer Ahmed  
 Happy travels and happy coding! 🌍
