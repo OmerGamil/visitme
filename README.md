@@ -212,11 +212,6 @@ I’d also like to thank every peer and instructor who shared knowledge and enco
 
 ---
 
-## License
-This project is released under the MIT License.
-
----
-
 **Live Demo:** [https://visitme-04442a94a758.herokuapp.com/](https://visitme-04442a94a758.herokuapp.com/)
 
 **Author:** Omer Ahmed  
