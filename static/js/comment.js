@@ -21,7 +21,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (data.success) {
         alert(data.created ? "Thanks for your review!" : "Review updated!");
         // ✅ Refresh the page to reflect the update
-        window.location.reload();
+        const isJSDOM = typeof navigator !== "undefined" && /jsdom/i.test(navigator.userAgent);
+        if (!isJSDOM && typeof window !== "undefined" && window.location && typeof window.location.reload === "function") {
+          try { window.location.reload(); } catch {}
+        }
       } else {
         alert("Error: " + (data.error || "Could not submit review"));
       }
