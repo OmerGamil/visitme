@@ -9,6 +9,30 @@ Visit Me is a Django 5 web application that helps travellers discover and save t
 
 ---
 
+## Design Documentation
+
+### Wireframes
+Wireframes were created during the planning phase to visualise layout and user flow across devices.
+
+- Home Page (Desktop / Mobile)
+- Explore Page
+- Country Detail Page
+- City Detail Page
+- Landmark Detail Page
+- Authentication Pages
+
+[Wireframes live link](https://travel-discovery-companion-hbwaj.applets.com/)
+
+### Colour Scheme
+The application uses a dark theme inspired by modern travel platforms:
+- Primary: #dc3545 (Bootstrap danger)
+- Background: #0d1117
+- Text: #ffffff / #adb5bd
+
+### Typography
+- Headings: Bootstrap default (system UI)
+- Body text: Bootstrap default sans-serif
+
 ## Features
 
 ### Guided Discovery Experience
@@ -275,6 +299,23 @@ Covers interactivity for:
 
 Tests ensure DOM behaviour and AJAX logic function as expected.
 
+### Code Validation
+- Python: Flake8 (PEP8 compliance)
+- JavaScript: ESLint
+- HTML: W3C Validator
+- CSS: W3C CSS Validator
+
+### Browser Testing
+Tested on:
+- Chrome
+- Firefox
+- Safari
+
+### Edge Cases Tested
+- Submitting empty review
+- Duplicate wishlist items
+- Unauthorized access to CRUD URLs
+
 ---
 
 ## Data Model Overview
@@ -300,19 +341,27 @@ The following ERD illustrates the relationships between countries, cities, landm
 
 ---
 
-## Deployment Notes
+## Deployment (Heroku)
 
-- **Static & Media:**  
-  Whitenoise serves static files; Cloudinary hosts user-uploaded media.  
-- **Procfile:**  
-  `web: gunicorn visitme.wsgi`  
-- **Database:**  
-  Set `DATABASE_URL` to PostgreSQL for production.  
-- **Heroku Config Vars:**  
-  - `SECRET_KEY`  
-  - `DATABASE_URL`  
-  - `CLOUDINARY_URL`  
-  - `DISABLE_COLLECTSTATIC=1` (for initial deploy)
+### Prerequisites
+- Heroku account
+- GitHub account
+- Python 3.11+
+
+### Steps
+1. Create a new Heroku app
+2. Set Config Vars:
+   - SECRET_KEY
+   - DATABASE_URL
+   - CLOUDINARY_URL
+   - DISABLE_COLLECTSTATIC=1
+3. Connect GitHub repository
+4. Enable automatic deploys
+5. Deploy main branch
+6. Run migrations:
+   heroku run python manage.py migrate
+7. Create superuser:
+   heroku run python manage.py createsuperuser
 
 ---
 
