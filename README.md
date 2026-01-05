@@ -28,6 +28,7 @@ Visit Me is a Django 5 web application that helps travellers discover and save t
 ### Account Management
 - Django Allauth integration for registration, login, logout, and profile access.  
 - Secure user authentication system with permission checks.
+- All create, update, and delete actions for ratings, comments, and wishlists are protected by Django authentication and authorization checks.
 
 ### Responsive & Accessible Design
 - Built with Bootstrap 5 and custom CSS.  
@@ -48,6 +49,21 @@ Planning and progress were managed using **GitHub Projects**, with work divided 
 | Should Have | Half-star ratings, edit reviews, responsive design |
 | Could Have | User-submitted hidden gems |
 | Won’t Have | Public admin CMS (future phase) |
+
+---
+
+## CRUD Functionality
+
+| Model     | Create | Read | Update | Delete |
+|----------|--------|------|--------|--------|
+| Country  | Admin  | ✔    | Admin  | Admin  |
+| City     | Admin  | ✔    | Admin  | Admin  |
+| Landmark | Admin  | ✔    | Admin  | Admin  |
+| Rating   | ✔ (User) | ✔ | ✔ | ✔ |
+| Comment  | ✔ (User) | ✔ | ✔ | ✔ |
+| Wishlist | ✔ (User) | ✔ | ❌ | ✔ |
+
+**Note:** Wishlist items do not require update functionality; users may only add or remove items.
 
 ---
 
