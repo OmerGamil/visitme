@@ -11,27 +11,130 @@ Visit Me is a Django 5 web application that helps travellers discover and save t
 
 ## Features
 
-### 🌍 Guided Discovery Experience
+### Guided Discovery Experience
 - Hero carousel with search shortcuts and curated “Top Rated” lists.  
 - Explore page for searching, filtering, and sorting destinations.  
 - Clean storytelling layout for countries, cities, and landmarks.
 
-### ❤️ Wishlist with Instant Feedback
+### Wishlist with Instant Feedback
 - Heart icons toggle favourites dynamically via AJAX without page reloads.  
 - Handles both logged-in and anonymous users gracefully.
 
-### ⭐ Half-Star Ratings & Review Flow
+### Half-Star Ratings & Review Flow
 - Interactive star widgets allow quick ratings directly from the hero banner.  
 - Optional review modal appears after rating submission.  
 - Logged-in users can update or delete their reviews.
 
-### 🔐 Account Management
+### Account Management
 - Django Allauth integration for registration, login, logout, and profile access.  
 - Secure user authentication system with permission checks.
 
-### 📱 Responsive & Accessible Design
+### Responsive & Accessible Design
 - Built with Bootstrap 5 and custom CSS.  
 - Fully responsive layout and high contrast for accessibility.  
+
+---
+
+## Agile Methodology
+
+This project was developed using **Agile methodology**.  
+Planning and progress were managed using **GitHub Projects**, with work divided into **Epics**, **User Stories**, and **Tasks**.
+
+### MoSCoW Prioritisation
+
+| Priority | Features |
+|--------|---------|
+| Must Have | User authentication, browse destinations, ratings, reviews CRUD, wishlist |
+| Should Have | Half-star ratings, edit reviews, responsive design |
+| Could Have | User-submitted hidden gems |
+| Won’t Have | Public admin CMS (future phase) |
+
+---
+
+## User Stories & Acceptance Criteria
+
+The project was planned and developed using **Agile methodology**.  
+All core features were defined through user stories, each with clear acceptance criteria to ensure the functionality met user needs and project requirements.
+
+---
+
+### User Story 1: Home Page & Navigation
+**As a visitor**, I can access a welcoming home page so that I understand what the application is about and how to get started.
+
+**Acceptance Criteria**
+- The home page displays a short introduction and tagline explaining the purpose of the application.
+- The navigation bar includes links to Home, Discoveries, and Login/Register.
+- The layout is responsive and functions correctly on desktop, tablet, and mobile devices.
+
+---
+
+### User Story 2: Country and City Browsing
+**As a visitor**, I can browse countries and cities so that I can explore destinations based on location.
+
+**Acceptance Criteria**
+- A list of available countries is displayed.
+- Selecting a country shows all cities related to that country.
+- Selecting a city displays a list of discovery places within that city.
+
+---
+
+### User Story 3: General Discoveries Listing
+**As a visitor**, I can view a list of general discovery places so that I get ideas of what to visit.
+
+**Acceptance Criteria**
+- Each discovery place is shown as a card with a name and short description.
+- The list of places is filtered based on the selected city.
+- Each card links to a detailed place page.
+
+---
+
+### User Story 4: Place Detail Page
+**As a visitor**, I can view detailed information about a place so that I can decide if I want to visit it.
+
+**Acceptance Criteria**
+- The place detail page includes a full description and optional images.
+- Navigation allows users to return to the city or discovery list.
+- The page layout is responsive and accessible.
+
+---
+
+### User Story 5: User Registration
+**As a new user**, I can register an account so that I can comment on places and save them to my wishlist.
+
+**Acceptance Criteria**
+- A registration form is available to new users.
+- Form validation displays relevant error messages.
+- Successful registration redirects the user to the login page or homepage.
+
+---
+
+### User Story 6: User Login and Logout
+**As a returning user**, I can log in and log out so that I can manage my saved places and reviews securely.
+
+**Acceptance Criteria**
+- The login form accepts valid user credentials.
+- The navigation bar updates based on the user’s authentication status.
+- Users can log out securely and end their session.
+
+---
+
+### User Story 7: Leave Comments and Feedback
+**As a logged-in user**, I can leave comments on a place so that I can share my thoughts and help other travellers.
+
+**Acceptance Criteria**
+- A comment form is visible on place detail pages.
+- Only authenticated users can submit comments.
+- Comments display the username and timestamp.
+
+---
+
+### User Story 8: Save Places to Wishlist
+**As a logged-in user**, I can save places to a personal wishlist so that I can remember destinations I want to visit.
+
+**Acceptance Criteria**
+- A “Save” or wishlist button appears on place cards and detail pages.
+- Saved places are visible in the user’s wishlist.
+- Users can remove places from their wishlist at any time.
 
 ---
 
@@ -142,6 +245,18 @@ Covers interactivity for:
 - `carousel.js`
 - `script.js`
 
+### Manual Testing
+
+| Feature | Action | Expected Result | Result |
+|-------|--------|----------------|--------|
+| Register | Submit valid form | Account created | Pass |
+| Login | Enter valid credentials | User logged in | Pass |
+| Add review | Submit review | Review displayed | Pass |
+| Edit review | Update review text | Review updated | Pass |
+| Delete review | Click delete | Review removed | Pass |
+| Wishlist | Toggle heart icon | Item added/removed | Pass |
+| Logout | Click logout | User logged out | Pass |
+
 Tests ensure DOM behaviour and AJAX logic function as expected.
 
 ---
@@ -159,6 +274,13 @@ Tests ensure DOM behaviour and AJAX logic function as expected.
 | **Wishlist** | Generic relation for bookmarking countries, cities, or landmarks. |
 
 Generic relations allow the same rating/wishlist functionality to work across all entity types without duplicating tables.
+
+### Entity Relationship Diagram (ERD)
+
+The following ERD illustrates the relationships between countries, cities, landmarks, users, ratings, comments, and wishlist items.
+
+![ERD Diagram](docs/erd.png)
+**Note:** Ratings, comments, and wishlist items use Django ContentTypes (GenericForeignKey) to relate to Country, City, or Landmark.
 
 ---
 
@@ -184,6 +306,17 @@ Generic relations allow the same rating/wishlist functionality to work across al
 2. Follow code style: PEP8 (Python) and ESLint defaults (JS).  
 3. Write or update relevant tests.  
 4. Submit a pull request explaining changes and test steps.
+
+---
+
+## Bugs
+
+### Fixed
+- Fixed JavaScript crash in hero slider when `data-images` was missing (guarded JSON parsing).
+- Implemented review deletion with secure server-side POST and redirect back to `#reviews`.
+
+### Remaining
+- None known.
 
 ---
 
