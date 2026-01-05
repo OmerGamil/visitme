@@ -2,7 +2,7 @@ from django.views.generic import TemplateView, DetailView
 from django.http import JsonResponse
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q, Avg
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 
@@ -262,3 +262,27 @@ def submit_comment(request):
         "text": comment.text,
         "timestamp": comment.created_at.strftime("%b %d, %Y %H:%M")
     })
+
+from django.urls import reverse
+
+@require_POST
+@login_required
+def delete_comment(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id, user=request.user)
+
+    obj = comment.content_object
+    content_type = comment.content_type.model
+
+    comment.delete()
+
+    if content_type == "country":
+        url = reverse("country_detail", kwargs={"slug": obj.slug})
+    elif content_type == "city":
+        url = reverse("city_detail", kwargs={"slug": obj.slug})
+    elif content_type == "landmark":
+        url = reverse("landmark_detail", kwargs={"slug": obj.slug})
+    else:
+        url = "/"
+
+    return redirect(f"{url}#reviews")
+

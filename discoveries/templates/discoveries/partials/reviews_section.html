@@ -4,9 +4,6 @@
   <div class="card shadow-sm border-0 rounded-4 p-4 mb-4">
     <div class="d-flex justify-content-between align-items-center mb-2">
       <strong class="text-danger">{{ user.username }} (You)</strong>
-      {% if user_comment %}
-        <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" id="edit-comment-btn">Edit</button>
-      {% endif %}
     </div>
     <div id="comment-display" {% if not user_comment %}style="display:none;"{% endif %}>
       {% if user_rating %}
@@ -26,7 +23,19 @@
       <p id="user-comment-text" class="mb-0">{{ user_comment.text }}</p>
       <div id="user-comment-time" class="text-muted small mt-1">{{ user_comment.created_at }}</div>
     </div>
-
+    {% if user_comment %}
+      <div class="d-flex justify-content-end mt-2 gap-2">
+        <button class="btn btn-sm btn-outline-secondary mt-2" id="edit-comment-btn">Edit</button>
+        <form method="post"
+              action="{% url 'delete_comment' user_comment.id %}"
+              style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-outline-danger mt-2">
+            Delete
+          </button>
+        </form>
+      </div>
+    {% endif %}
     <form id="user-comment-form" {% if user_comment %}style="display:none;"{% endif %} action="{% url 'submit_comment' %}" method="post">
       {% csrf_token %}
       <input type="hidden" name="object_id" value="{{ object.id }}">
